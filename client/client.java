@@ -1,9 +1,14 @@
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.text.*;
 import java.util.*;
 import javax.swing.border.Border;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.DocumentEvent;
+
 import java.awt.image.BufferedImage;
+import java.text.*;
 
 public class client {
     public static void main(String[] args) {
@@ -189,6 +194,10 @@ class Toolbar extends JPanel {
             g.drawRect(gap, 10, displayBoxSize, displayBoxSize);
             g.drawRect(width - displayBoxSize - gap, 10, displayBoxSize, displayBoxSize);
         }
+
+        static public int getCHeight() {
+            return height + padding;
+        }
     }
 
     private class ColorBox extends JPanel implements MouseListener {
@@ -228,6 +237,83 @@ class Toolbar extends JPanel {
         }
     }
 
+    private class SizePanel extends JPanel {
+        private static final int padding = 10;
+        private static final int height = 30;
+        public static final int _min = 2;
+        public static final int _max = 99;
+        JFormattedTextField sizeField;
+
+        SizePanel() {
+            super();
+            int width = getActualWidth() - 2 * padding;
+            JLabel text = new JLabel("Size: ");
+            text.setBounds(30, 0, 100, height);
+            JButton minus = new JButton("-");
+            minus.setBounds(100, 0, 50, height);
+            minus.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    onSizeChange(-1);
+                }
+            });
+            JButton add = new JButton("+");
+            add.setBounds(200, 0, 50, height);
+            add.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    onSizeChange(1);
+                }
+            });
+
+            NumberFormat format = NumberFormat.getInstance();
+            NumberFormatter formatter = new NumberFormatter(format);
+            formatter.setValueClass(Integer.class);
+            formatter.setMinimum(_min);
+            formatter.setMaximum(_max);
+            formatter.setAllowsInvalid(false);
+            formatter.setCommitsOnValidEdit(true);
+            sizeField = new JFormattedTextField(formatter);
+            sizeField.setText(size + "");
+            sizeField.setBounds(150, 0, 50, height);
+            sizeField.addKeyListener(new KeyListener() {
+                @Override
+                public void keyPressed(KeyEvent e) {
+                }
+
+                @Override
+                public void keyReleased(KeyEvent e) {
+                    int current = Integer.parseInt(sizeField.getText());
+                    Toolbar.this.onSizeChange(current);
+                }
+
+                @Override
+                public void keyTyped(KeyEvent e) {
+
+                }
+            });
+
+            this.add(text);
+            this.add(minus);
+            this.add(sizeField);
+            this.add(add);
+            setBounds(padding, padding + ColorPanel.getCHeight(), width, height);
+            setLayout(null);
+        }
+
+        private void onSizeChange(int diff) {
+            int current = Integer.parseInt(sizeField.getText());
+            current += diff;
+            if (current > _max)
+                current = _max;
+            if (current < _min)
+                current = _min;
+
+            Toolbar.this.onSizeChange(current);
+            sizeField.setText(current + "");
+        }
+    }
+
     public Toolbar(Canvas canvas) {
         super();
         this.canvas = canvas;
@@ -240,6 +326,7 @@ class Toolbar extends JPanel {
 
         colorPanel = new ColorPanel();
         add(colorPanel);
+        add(new SizePanel());
         colorPanel.repaint();
     }
 
@@ -266,5 +353,24 @@ class Toolbar extends JPanel {
 
     private static int getActualHeight() {
         return height - 3 * padding;
+    }
+}
+
+interface SimpleDocumentListener extends DocumentListener {
+    abstract public void update(DocumentEvent e);
+
+    @Override
+    default void insertUpdate(DocumentEvent e) {
+        update(e);
+    }
+
+    @Override
+    default void removeUpdate(DocumentEvent e) {
+        update(e);
+    }
+
+    @Override
+    default void changedUpdate(DocumentEvent e) {
+        update(e);
     }
 }
