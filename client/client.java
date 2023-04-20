@@ -4,11 +4,11 @@ import javax.swing.*;
 import javax.swing.text.*;
 import java.util.*;
 import javax.swing.border.Border;
-import javax.swing.event.DocumentListener;
-import javax.swing.event.DocumentEvent;
 
 import java.awt.image.BufferedImage;
+import java.io.*;
 import java.text.*;
+import javax.imageio.ImageIO;
 
 public class client {
     public static void main(String[] args) {
@@ -75,6 +75,29 @@ class Canvas extends JPanel implements MouseListener, MouseMotionListener {
         g.setColor(Color.decode(color));
         g.fillOval(x, y, size, size);
         repaint();
+    }
+
+    public void saveAsImage(String path) {
+        if (!path.endsWith(".png")) {
+            path = path + ".png";
+        }
+        File outputfile = new File(path);
+        try {
+            if (!ImageIO.write(bufferedImage, "png", outputfile)) {
+                System.out.println("failed");
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    public void loadImage(String path) {
+        try {
+            bufferedImage = ImageIO.read(new File(path));
+            repaint();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
     }
 
     @Override
@@ -312,6 +335,10 @@ class Toolbar extends JPanel {
             Toolbar.this.onSizeChange(current);
             sizeField.setText(current + "");
         }
+
+        public static int getCHeight() {
+            return height + padding;
+        }
     }
 
     public Toolbar(Canvas canvas) {
@@ -327,7 +354,44 @@ class Toolbar extends JPanel {
         colorPanel = new ColorPanel();
         add(colorPanel);
         add(new SizePanel());
-        colorPanel.repaint();
+        JButton saveButton = new JButton("Save");
+        saveButton.setBounds(0, ColorPanel.getCHeight() + SizePanel.getCHeight(), getActualWidth(), 30);
+        saveButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                FileDialog fd = new FileDialog(new Frame(), "Save as png file", FileDialog.LOAD);
+                fd.setMode(FileDialog.SAVE);
+                fd.setDirectory(System.getProperty("user.dir") + "/myImages");
+                fd.setFile("Untitled.png");
+                fd.setVisible(true);
+                if (fd.getFile() == null)
+                    return;
+                String path = fd.getDirectory() + fd.getFile();
+                canvas.saveAsImage(path);
+            }
+        });
+        add(saveButton);
+        JButton loadButton = new JButton("Load");
+        loadButton.setBounds(0, ColorPanel.getCHeight() + SizePanel.getCHeight() + 30, getActualWidth(), 30);
+        loadButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                FileDialog fd = new FileDialog(new Frame(), "Choose a file", FileDialog.LOAD);
+                fd.setDirectory(System.getProperty("user.dir") + "/myImages");
+                fd.setFilenameFilter(new FilenameFilter() {
+                    @Override
+                    public boolean accept(File dir, String name) {
+                        return name.endsWith(".png");
+                    }
+                });
+                fd.setVisible(true);
+                if (fd.getFile() == null)
+                    return;
+                String path = fd.getDirectory() + fd.getFile();
+                canvas.loadImage(path);
+            }
+        });
+        add(loadButton);
     }
 
     private void onMainColorChange(String color) {
@@ -349,28 +413,5 @@ class Toolbar extends JPanel {
 
     private static int getActualWidth() {
         return width - 3 * padding;
-    }
-
-    private static int getActualHeight() {
-        return height - 3 * padding;
-    }
-}
-
-interface SimpleDocumentListener extends DocumentListener {
-    abstract public void update(DocumentEvent e);
-
-    @Override
-    default void insertUpdate(DocumentEvent e) {
-        update(e);
-    }
-
-    @Override
-    default void removeUpdate(DocumentEvent e) {
-        update(e);
-    }
-
-    @Override
-    default void changedUpdate(DocumentEvent e) {
-        update(e);
     }
 }
