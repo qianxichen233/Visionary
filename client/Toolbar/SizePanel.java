@@ -10,8 +10,8 @@ public class SizePanel extends JPanel {
     private static final int height = 30;
     public static final int _min = 2;
     public static final int _max = 99;
-    JFormattedTextField sizeField;
 
+    JFormattedTextField sizeField;
     Toolbar toolbar;
 
     SizePanel(Toolbar toolbar) {
