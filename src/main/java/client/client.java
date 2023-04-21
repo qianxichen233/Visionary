@@ -1,32 +1,7 @@
 package client;
 
-import java.awt.*;
-import javax.swing.*;
-
-import client.Canvas.Canvas;
-import client.Toolbar.Toolbar;
-
 public class client {
     public static void main(String[] args) {
-        new DrawingPanel();
-    }
-}
-
-class DrawingPanel {
-    private JFrame jf = new JFrame("Visionary");
-
-    public DrawingPanel() {
-        jf.setSize(1250, 700);
-        jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        Canvas canvas = new Canvas();
-        Toolbar toolbar = new Toolbar(canvas);
-        jf.add(canvas);
-        jf.add(toolbar);
-
-        jf.setLocationRelativeTo(null);
-        jf.setLayout(null);
-        jf.getContentPane().setBackground(Color.decode("#394e5e"));
-        jf.setVisible(true);
-        jf.setResizable(false);
+        new ClientInstance("localhost", 23333).start();
     }
 }

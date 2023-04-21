@@ -12,7 +12,7 @@ public class DatabaseManager {
     private static final String username = "root";
     private static final String password = "";
 
-    Connection conn = null;
+    private Connection conn = null;
 
     public DatabaseManager() {
         connect();
@@ -28,17 +28,13 @@ public class DatabaseManager {
         this.conn = conn;
     }
 
-    private static void importSQL(Statement st, String path) throws SQLException {
+    private static void importSQL(Statement st, String path) throws SQLException, FileNotFoundException {
         File sqlfile = new File(path);
 
         InputStream in;
         Scanner s;
-        try {
-            in = new FileInputStream(sqlfile);
-            s = new Scanner(in);
-        } catch (FileNotFoundException e) {
-            return;
-        }
+        in = new FileInputStream(sqlfile);
+        s = new Scanner(in);
 
         s.useDelimiter("(;(\r)?\n)|(--\n)");
         try {
