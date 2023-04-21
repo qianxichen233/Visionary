@@ -1,6 +1,8 @@
 package client.Panel;
 
 import java.awt.*;
+import java.net.Socket;
+
 import javax.swing.*;
 
 import client.ClientInstance;
@@ -10,11 +12,16 @@ import client.Toolbar.Toolbar;
 public class DrawingPanel {
     private final ClientInstance client;
 
+    private Socket sock;
+    private String username;
+
     private JFrame jf;
 
-    public DrawingPanel(ClientInstance client) {
-        System.out.println("drawing!");
+    public DrawingPanel(ClientInstance client, Socket sock, String username) {
         this.client = client;
+        this.sock = sock;
+        this.username = username;
+
         jf = client.jf;
         jf.getContentPane().removeAll();
         jf.getContentPane().invalidate();

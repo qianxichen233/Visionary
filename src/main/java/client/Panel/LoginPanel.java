@@ -44,7 +44,7 @@ public class LoginPanel {
         jf.setVisible(true);
     }
 
-    public void login(String username, String password) {
+    public void login(final String username, final String password) {
         try {
             final Socket sock = new Socket(client.serverIP, client.serverPort);
             Scanner sin = new Scanner(sock.getInputStream());
@@ -65,7 +65,7 @@ public class LoginPanel {
             new setTimeout(new setTimeoutEvent() {
                 @Override
                 public void performAction() {
-                    client.login(sock);
+                    client.login(sock, username);
                 }
             }, 3000);
         } catch (UnknownHostException e) {
@@ -73,6 +73,10 @@ public class LoginPanel {
         } catch (IOException e) {
             System.out.println(e);
         }
+    }
+
+    public void swtich() {
+        client.registerPage();
     }
 }
 
@@ -86,7 +90,7 @@ class LoginForm extends JPanel {
 
     public LoginForm(final LoginPanel panel) {
         super();
-        setLayout(new GridLayout(4, 1));
+        setLayout(new GridLayout(6, 1));
 
         final InputField username = new InputField("Username");
         username.getJTextArea().getDocument().addDocumentListener(new DocumentListener() {
@@ -155,10 +159,25 @@ class LoginForm extends JPanel {
         JPanel messagePanel = new JPanel(new GridBagLayout());
         messagePanel.add(message);
 
+        JPanel titlePanel = new JPanel(new GridBagLayout());
+        titlePanel.add(new JLabel("Login"));
+
+        JPanel switchPanel = new JPanel(new GridBagLayout());
+        JButton switchButton = new JButton("No Account? Register!");
+        switchButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                panel.swtich();
+            }
+        });
+        switchPanel.add(switchButton);
+
+        add(titlePanel);
         add(username);
         add(password);
         add(messagePanel);
         add(buttonPanel);
+        add(switchPanel);
     }
 
     public void setError(String error) {

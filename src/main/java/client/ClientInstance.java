@@ -33,8 +33,9 @@ public class ClientInstance extends Thread {
         loginPage();
     }
 
-    public void login(Socket sock) {
+    public void login(Socket sock, String username) {
         this.sock = sock;
+        this.username = username;
         drawingPage();
     }
 
@@ -47,7 +48,7 @@ public class ClientInstance extends Thread {
     }
 
     public void drawingPage() {
-        new DrawingPanel(this);
+        new DrawingPanel(this, sock, username);
     }
 
     public Socket getSocket() {

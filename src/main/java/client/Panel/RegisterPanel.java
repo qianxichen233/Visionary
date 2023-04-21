@@ -75,6 +75,10 @@ public class RegisterPanel {
             System.out.println(e);
         }
     }
+
+    public void swtich() {
+        client.loginPage();
+    }
 }
 
 class RegisterForm extends JPanel {
@@ -87,7 +91,7 @@ class RegisterForm extends JPanel {
 
     public RegisterForm(final RegisterPanel panel) {
         super();
-        setLayout(new GridLayout(4, 1));
+        setLayout(new GridLayout(6, 1));
 
         final InputField username = new InputField("Username");
         username.getJTextArea().getDocument().addDocumentListener(new DocumentListener() {
@@ -156,10 +160,25 @@ class RegisterForm extends JPanel {
         JPanel messagePanel = new JPanel(new GridBagLayout());
         messagePanel.add(message);
 
+        JPanel titlePanel = new JPanel(new GridBagLayout());
+        titlePanel.add(new JLabel("Register"));
+
+        JPanel switchPanel = new JPanel(new GridBagLayout());
+        JButton switchButton = new JButton("Already Have Account? Login!");
+        switchButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                panel.swtich();
+            }
+        });
+        switchPanel.add(switchButton);
+
+        add(titlePanel);
         add(username);
         add(password);
         add(messagePanel);
         add(buttonPanel);
+        add(switchPanel);
     }
 
     public void setError(String error) {
