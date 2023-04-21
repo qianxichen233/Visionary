@@ -30,11 +30,12 @@ public class ClientInstance extends Thread {
 
     @Override
     public void run() {
-        registerPage();
+        loginPage();
     }
 
-    public void setSocket(Socket sock) {
+    public void login(Socket sock) {
         this.sock = sock;
+        drawingPage();
     }
 
     public void loginPage() {
@@ -43,6 +44,10 @@ public class ClientInstance extends Thread {
 
     public void registerPage() {
         new RegisterPanel(this);
+    }
+
+    public void drawingPage() {
+        new DrawingPanel(this);
     }
 
     public Socket getSocket() {

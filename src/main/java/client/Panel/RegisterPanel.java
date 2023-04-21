@@ -10,6 +10,7 @@ import java.io.*;
 import java.util.*;
 
 import javax.swing.*;
+import javax.swing.event.*;
 
 import client.ClientInstance;
 import client.Panel.utils.*;
@@ -39,6 +40,7 @@ public class RegisterPanel {
 
         jf.setLayout(null);
         jf.getContentPane().setBackground(Color.decode("#394e5e"));
+        jf.getContentPane().repaint();
         jf.setVisible(true);
     }
 
@@ -53,7 +55,6 @@ public class RegisterPanel {
             sout.println(password);
 
             int result = Integer.parseInt(sin.nextLine());
-            System.out.println(result);
             if (result != 200) {
                 registerForm.setError(sin.nextLine());
                 sock.close();
@@ -87,19 +88,78 @@ class RegisterForm extends JPanel {
     public RegisterForm(final RegisterPanel panel) {
         super();
         setLayout(new GridLayout(4, 1));
+
         final InputField username = new InputField("Username");
+        username.getJTextArea().getDocument().addDocumentListener(new DocumentListener() {
+            public void update() {
+                clearError();
+                clearSuccess();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                update();
+            }
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                update();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                update();
+            }
+        });
+
         final InputField password = new InputField("Password");
+        password.getJTextArea().getDocument().addDocumentListener(new DocumentListener() {
+            public void update() {
+                clearError();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                update();
+            }
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                update();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                update();
+            }
+        });
+
+        JPanel buttonPanel = new JPanel(new GridBagLayout());
         JButton button = new JButton("Register");
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                panel.register(username.getText(), password.getText());
+                if (!success.isEmpty())
+                    return;
+                String username_input = username.getText();
+                String password_input = password.getText();
+                if (username_input.isEmpty())
+                    setError("Please Enter Username");
+                else if (password_input.isEmpty())
+                    setError("Please Enter Password");
+                else
+                    panel.register(username_input, password_input);
             }
         });
+        buttonPanel.add(button);
+
+        JPanel messagePanel = new JPanel(new GridBagLayout());
+        messagePanel.add(message);
+
         add(username);
         add(password);
-        add(button);
-        add(message);
+        add(messagePanel);
+        add(buttonPanel);
     }
 
     public void setError(String error) {
@@ -124,7 +184,7 @@ class RegisterForm extends JPanel {
 
     private void renderMessage() {
         if (!success.isEmpty()) {
-            message.setForeground(Color.green);
+            message.setForeground(Color.decode("#008000"));
             message.setText(success);
         } else if (!error.isEmpty()) {
             message.setForeground(Color.red);

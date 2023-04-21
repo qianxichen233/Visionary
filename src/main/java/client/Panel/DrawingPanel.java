@@ -10,22 +10,25 @@ import client.Toolbar.Toolbar;
 public class DrawingPanel {
     private final ClientInstance client;
 
-    private JFrame jf = new JFrame("Visionary");
+    private JFrame jf;
 
     public DrawingPanel(ClientInstance client) {
+        System.out.println("drawing!");
         this.client = client;
+        jf = client.jf;
+        jf.getContentPane().removeAll();
+        jf.getContentPane().invalidate();
+        jf.getContentPane().validate();
+        jf.getContentPane().repaint();
 
-        jf.setSize(ClientInstance.windowWidth, ClientInstance.windowHeight);
-        jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         Canvas canvas = new Canvas();
         Toolbar toolbar = new Toolbar(canvas);
         jf.add(canvas);
         jf.add(toolbar);
 
-        jf.setLocationRelativeTo(null);
         jf.setLayout(null);
         jf.getContentPane().setBackground(Color.decode("#394e5e"));
+        jf.getContentPane().repaint();
         jf.setVisible(true);
-        jf.setResizable(false);
     }
 }
