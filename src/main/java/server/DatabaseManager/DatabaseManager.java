@@ -6,6 +6,8 @@ import java.io.*;
 import java.util.*;
 import java.util.Date;
 
+import server.DatabaseManager.Modal.Drawing;
+
 public class DatabaseManager {
     private static final String url = "jdbc:mariadb://127.0.0.1/";
     private static final String database = "Visionary";
@@ -96,14 +98,15 @@ public class DatabaseManager {
         return true;
     }
 
-    public boolean addDrawing(String ID, String username) {
-        String sql = "INSERT INTO drawing VALUES(?, ?, ?)";
+    public boolean addDrawing(String hash, String username, String filename) {
+        String sql = "INSERT INTO drawing(hash, username, filename, createdAt) VALUES(?, ?, ?, ?)";
         String now = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
         try {
             PreparedStatement s = conn.prepareStatement(sql);
-            s.setString(1, ID);
+            s.setString(1, hash);
             s.setString(2, username);
-            s.setString(3, now);
+            s.setString(3, filename);
+            s.setString(4, now);
             s.executeQuery();
         } catch (Exception e) {
             return false;
@@ -128,16 +131,21 @@ public class DatabaseManager {
         return password;
     }
 
-    public ArrayList<String> getUserDrawings(String username) {
-        ArrayList<String> result = new ArrayList<String>();
-        String sql = "SELECT ID FROM drawing WHERE username = ?";
+    public ArrayList<Drawing> getUserDrawings(String username) {
+        ArrayList<Drawing> result = new ArrayList<Drawing>();
+        String sql = "SELECT * FROM drawing WHERE username = ?";
         try {
             PreparedStatement s = conn.prepareStatement(sql);
             s.setString(1, username);
             s.executeQuery();
             ResultSet rs = s.executeQuery();
-            while (rs.next())
-                result.add(rs.getString("ID"));
+            while (rs.next()) {
+                result.add(new Drawing(rs.getInt("ID"),
+                        rs.getString("hash"),
+                        rs.getString("username"),
+                        rs.getString("filename"),
+                        rs.getString("createdAt")));
+            }
         } catch (Exception e) {
             System.out.println(e);
         }

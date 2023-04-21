@@ -1,10 +1,13 @@
 package server.Service;
 
 import java.net.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.io.*;
 import java.util.*;
 
 import server.DatabaseManager.DatabaseManager;
+import server.DatabaseManager.Modal.Drawing;
 import server.utils.*;
 
 public class Service extends Thread {
@@ -53,11 +56,19 @@ public class Service extends Thread {
             // after login
             sout.println("200");
 
+            ArrayList<Drawing> drawings = databaseManager.getUserDrawings(username);
+            sout.println(drawings.size());
+            for (Drawing drawing : drawings) {
+                sout.println(drawing.filename);
+                sout.println(drawing.createdAt);
+            }
+
             while (true) {
                 String operation = sin.nextLine();
                 if (operation.equals("save")) {
-                    String hash = receiveImage(sock);
-                    databaseManager.addDrawing(hash, username);
+                    String filename = sin.nextLine();
+                    String hash = receiveImage(sock, System.getProperty("user.dir") + "/userImage/" + username);
+                    databaseManager.addDrawing(hash, username, filename);
                 }
             }
 
@@ -66,7 +77,7 @@ public class Service extends Thread {
         }
     }
 
-    public String receiveImage(Socket sock) {
+    public String receiveImage(Socket sock, String path) {
         String imageHash = "";
 
         try {
@@ -81,8 +92,10 @@ public class Service extends Thread {
                 byte[] imgBytes = readExactly(in, filesize);
                 imageHash = MyCrypto.SHAsum(imgBytes);
 
-                FileOutputStream f = new FileOutputStream(
-                        System.getProperty("user.dir") + "/userImage/" + imageHash + ".png");
+                Files.createDirectories(Paths.get(path));
+                if (!path.endsWith("/"))
+                    path += "/";
+                FileOutputStream f = new FileOutputStream(path + imageHash + ".png");
                 f.write(imgBytes);
                 f.close();
             }

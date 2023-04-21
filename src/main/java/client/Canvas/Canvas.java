@@ -39,6 +39,17 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
                 BufferedImage.TYPE_INT_ARGB);
     }
 
+    public Canvas(DrawingPanel panel, BufferedImage bufferedImage) {
+        super();
+        this.panel = panel;
+        addMouseListener(this);
+        addMouseMotionListener(this);
+        setBounds(padding, padding, width - 3 * padding, height - 3 * padding);
+        setLayout(null);
+        setBackground(Color.white);
+        this.bufferedImage = bufferedImage;
+    }
+
     public void setMainColor(String color) {
         this.mainColor = color;
     }

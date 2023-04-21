@@ -5,8 +5,10 @@ CREATE TABLE user (
 );
 
 CREATE TABLE drawing (
-    ID VARCHAR(100),
+    ID INT AUTO_INCREMENT,
+    hash VARCHAR(100),
     username VARCHAR(50) NOT NULL,
+    filename VARCHAR(50) NOT NULL,
     createdAt DATETIME NOT NULL,
     PRIMARY KEY(ID),
     FOREIGN KEY(username) REFERENCES user(username)

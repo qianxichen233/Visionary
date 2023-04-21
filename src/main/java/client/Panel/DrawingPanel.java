@@ -16,14 +16,36 @@ public class DrawingPanel {
     private final ClientInstance client;
 
     private Socket sock;
-    private String username;
+    private String filename;
 
     private JFrame jf;
 
-    public DrawingPanel(ClientInstance client, Socket sock, String username) {
+    public DrawingPanel(ClientInstance client, Socket sock, String filename, BufferedImage bufferedImage) {
         this.client = client;
         this.sock = sock;
-        this.username = username;
+        this.filename = filename;
+
+        jf = client.jf;
+        jf.getContentPane().removeAll();
+        jf.getContentPane().invalidate();
+        jf.getContentPane().validate();
+        jf.getContentPane().repaint();
+
+        Canvas canvas = new Canvas(this, bufferedImage);
+        Toolbar toolbar = new Toolbar(canvas);
+        jf.add(canvas);
+        jf.add(toolbar);
+
+        jf.setLayout(null);
+        jf.getContentPane().setBackground(Color.decode("#394e5e"));
+        jf.getContentPane().repaint();
+        jf.setVisible(true);
+    }
+
+    public DrawingPanel(ClientInstance client, Socket sock, String filename) {
+        this.client = client;
+        this.sock = sock;
+        this.filename = filename;
 
         jf = client.jf;
         jf.getContentPane().removeAll();
@@ -60,6 +82,7 @@ public class DrawingPanel {
         try {
             PrintStream sout = new PrintStream(sock.getOutputStream());
             sout.println("save");
+            sout.println(filename);
 
             OutputStream out = sock.getOutputStream();
 

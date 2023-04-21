@@ -13,6 +13,7 @@ public class Toolbar extends JPanel {
     private static final int padding = 30;
 
     private Canvas canvas;
+    private String filename;
 
     String mainColor = Canvas.defaultMainColor;
     String secondaryColor = Canvas.defaultSecondaryColor;
