@@ -4,6 +4,7 @@ import java.awt.*;
 import javax.swing.*;
 
 import client.Canvas.Canvas;
+import client.Panel.DrawingPanel;
 import client.Toolbar.Buttons.*;
 
 public class Toolbar extends JPanel {
@@ -21,6 +22,7 @@ public class Toolbar extends JPanel {
     private SizePanel sizePanel;
     private SaveButton saveButton;
     private LoadButton loadButton;
+    private SaveRemoteButton saveRemoteButton;
 
     public Toolbar(Canvas canvas) {
         super();
@@ -35,11 +37,13 @@ public class Toolbar extends JPanel {
         sizePanel = new SizePanel(this);
         saveButton = new SaveButton(this, "Save");
         loadButton = new LoadButton(this, "Load");
+        saveRemoteButton = new SaveRemoteButton(this, "Save Remote");
 
         add(colorPanel);
         add(sizePanel);
         add(saveButton);
         add(loadButton);
+        add(saveRemoteButton);
     }
 
     void onMainColorChange(String color) {
@@ -61,6 +65,10 @@ public class Toolbar extends JPanel {
 
     public void onSaveLocal(String path) {
         canvas.saveAsImage(path);
+    }
+
+    public void onSaveRemote() {
+        canvas.saveAsImageRemote();
     }
 
     public void onLoad(String path) {

@@ -4,6 +4,8 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
+import client.Panel.DrawingPanel;
+
 import java.awt.image.BufferedImage;
 import java.io.*;
 import javax.imageio.ImageIO;
@@ -22,8 +24,11 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
     private volatile String secondaryColor = defaultSecondaryColor;
     private volatile int size = defaultSize;
 
-    public Canvas() {
+    private DrawingPanel panel;
+
+    public Canvas(DrawingPanel panel) {
         super();
+        this.panel = panel;
         addMouseListener(this);
         addMouseMotionListener(this);
         setBounds(padding, padding, width - 3 * padding, height - 3 * padding);
@@ -54,17 +59,11 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
     }
 
     public void saveAsImage(String path) {
-        if (!path.endsWith(".png")) {
-            path = path + ".png";
-        }
-        File outputfile = new File(path);
-        try {
-            if (!ImageIO.write(bufferedImage, "png", outputfile)) {
-                System.out.println("failed");
-            }
-        } catch (Exception e) {
-            System.out.println(e);
-        }
+        panel.saveAsImage(bufferedImage, path);
+    }
+
+    public void saveAsImageRemote() {
+        panel.saveAsImageRemote(bufferedImage);
     }
 
     public void loadImage(String path) {

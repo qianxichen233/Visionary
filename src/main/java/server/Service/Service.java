@@ -5,6 +5,7 @@ import java.io.*;
 import java.util.*;
 
 import server.DatabaseManager.DatabaseManager;
+import server.utils.*;
 
 public class Service extends Thread {
     private final Socket sock;
@@ -24,10 +25,6 @@ public class Service extends Thread {
             String type = sin.nextLine(); // whether login or register
             String username = sin.nextLine();
             String password = sin.nextLine();
-
-            System.out.println(type);
-            System.out.println(username);
-            System.out.println(password);
 
             AccountHandler accountHandler = new AccountHandler(databaseManager);
 
@@ -56,8 +53,56 @@ public class Service extends Thread {
             // after login
             sout.println("200");
 
+            while (true) {
+                String operation = sin.nextLine();
+                if (operation.equals("save")) {
+                    String hash = receiveImage(sock);
+                    databaseManager.addDrawing(hash, username);
+                }
+            }
+
         } catch (Exception e) {
-            System.out.println(sock.getInetAddress() + "closed");
+            System.out.println(sock.getInetAddress() + " closed");
         }
+    }
+
+    public String receiveImage(Socket sock) {
+        String imageHash = "";
+
+        try {
+            InputStream in = sock.getInputStream();
+
+            byte[] b = new byte[30];
+            int len = in.read(b);
+
+            int filesize = Integer.parseInt(new String(b).substring(0, len));
+
+            if (filesize > 0) {
+                byte[] imgBytes = readExactly(in, filesize);
+                imageHash = MyCrypto.SHAsum(imgBytes);
+
+                FileOutputStream f = new FileOutputStream(
+                        System.getProperty("user.dir") + "/userImage/" + imageHash + ".png");
+                f.write(imgBytes);
+                f.close();
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+
+        return imageHash;
+    }
+
+    public static byte[] readExactly(InputStream input, int size) throws IOException {
+        byte[] data = new byte[size];
+        int index = 0;
+        while (index < size) {
+            int bytesRead = input.read(data, index, size - index);
+            if (bytesRead < 0) {
+                throw new IOException("Insufficient data in stream");
+            }
+            index += bytesRead;
+        }
+        return data;
     }
 }

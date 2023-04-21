@@ -67,7 +67,7 @@ public class LoginPanel {
                 public void performAction() {
                     client.login(sock, username);
                 }
-            }, 3000);
+            }, 1000);
         } catch (UnknownHostException e) {
             System.out.println(e);
         } catch (IOException e) {
