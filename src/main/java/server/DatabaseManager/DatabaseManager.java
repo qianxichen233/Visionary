@@ -153,6 +153,24 @@ public class DatabaseManager {
         return result;
     }
 
+    public String getDrawingHash(int ID) {
+        String hash = "";
+        String sql = "SELECT hash FROM drawing WHERE ID = ? LIMIT 1";
+
+        try {
+            PreparedStatement s = conn.prepareStatement(sql);
+            s.setInt(1, ID);
+            s.executeQuery();
+            ResultSet rs = s.executeQuery();
+            if (rs.next())
+                hash = rs.getString("hash");
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+
+        return hash;
+    }
+
     public Connection getConnection() {
         return conn;
     }

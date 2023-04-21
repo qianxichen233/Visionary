@@ -1,13 +1,10 @@
 package client;
 
-import java.io.IOException;
+import java.awt.image.BufferedImage;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Scanner;
 
 import javax.swing.JFrame;
 
-import client.Modal.Drawing;
 import client.Panel.*;
 
 public class ClientInstance extends Thread {
@@ -21,7 +18,6 @@ public class ClientInstance extends Thread {
 
     private String username;
     private Socket sock;
-    private ArrayList<Drawing> drawings = new ArrayList<Drawing>();
 
     public ClientInstance(String IP, int port) {
         serverIP = IP;
@@ -41,22 +37,7 @@ public class ClientInstance extends Thread {
     public void login(Socket sock, String username) {
         this.sock = sock;
         this.username = username;
-        try {
-            Scanner sin = new Scanner(sock.getInputStream());
-            int number = Integer.parseInt(sin.nextLine());
-            for (int i = 0; i < number; ++i) {
-                String filename = sin.nextLine();
-                String createdAt = sin.nextLine();
-                drawings.add(new Drawing(filename, createdAt));
-            }
-        } catch (IOException e) {
-            System.out.println(e);
-        }
-        for (Drawing drawing : drawings) {
-            System.out.println(drawing.filename);
-            System.out.println(drawing.createdAt);
-        }
-        drawingPage();
+        drawingListPage();
     }
 
     public void loginPage() {
@@ -69,6 +50,14 @@ public class ClientInstance extends Thread {
 
     public void drawingPage() {
         new DrawingPanel(this, sock, "untitled");
+    }
+
+    public void drawingPage(BufferedImage image, String filename) {
+        new DrawingPanel(this, sock, filename, image);
+    }
+
+    public void drawingListPage() {
+        new DrawingListPanel(this, sock, username);
     }
 
     public Socket getSocket() {

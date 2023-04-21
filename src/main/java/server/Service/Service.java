@@ -3,8 +3,11 @@ package server.Service;
 import java.net.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.*;
+
+import javax.imageio.ImageIO;
 
 import server.DatabaseManager.DatabaseManager;
 import server.DatabaseManager.Modal.Drawing;
@@ -56,12 +59,12 @@ public class Service extends Thread {
             // after login
             sout.println("200");
 
-            ArrayList<Drawing> drawings = databaseManager.getUserDrawings(username);
-            sout.println(drawings.size());
-            for (Drawing drawing : drawings) {
-                sout.println(drawing.filename);
-                sout.println(drawing.createdAt);
-            }
+            // ArrayList<Drawing> drawings = databaseManager.getUserDrawings(username);
+            // sout.println(drawings.size());
+            // for (Drawing drawing : drawings) {
+            // sout.println(drawing.filename);
+            // sout.println(drawing.createdAt);
+            // }
 
             while (true) {
                 String operation = sin.nextLine();
@@ -69,6 +72,19 @@ public class Service extends Thread {
                     String filename = sin.nextLine();
                     String hash = receiveImage(sock, System.getProperty("user.dir") + "/userImage/" + username);
                     databaseManager.addDrawing(hash, username, filename);
+                } else if (operation.equals("list")) {
+                    ArrayList<Drawing> drawings = databaseManager.getUserDrawings(username);
+                    sout.println(drawings.size());
+                    for (Drawing drawing : drawings) {
+                        sout.println(drawing.ID);
+                        sout.println(drawing.filename);
+                        sout.println(drawing.createdAt);
+                    }
+                } else if (operation.equals("get")) {
+                    int ID = Integer.parseInt(sin.nextLine());
+                    String hash = databaseManager.getDrawingHash(ID);
+                    String path = System.getProperty("user.dir") + "/userImage/" + username + "/" + hash + ".png";
+                    sendImage(sock, path);
                 }
             }
 
@@ -104,6 +120,23 @@ public class Service extends Thread {
         }
 
         return imageHash;
+    }
+
+    public void sendImage(Socket sock, String path) {
+        try {
+            BufferedImage image = ImageIO.read(new File(path));
+            OutputStream out = sock.getOutputStream();
+
+            ByteArrayOutputStream bScrn = new ByteArrayOutputStream();
+            ImageIO.write(image, "png", bScrn);
+            byte imgBytes[] = bScrn.toByteArray();
+            bScrn.close();
+
+            out.write((Integer.toString(imgBytes.length)).getBytes());
+            out.write(imgBytes, 0, imgBytes.length);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
     }
 
     public static byte[] readExactly(InputStream input, int size) throws IOException {
