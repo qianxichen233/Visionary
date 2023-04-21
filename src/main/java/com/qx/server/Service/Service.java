@@ -1,10 +1,10 @@
-package Service;
+package com.qx.server.Service;
 
 import java.net.*;
 import java.io.*;
 import java.util.*;
 
-import DatabaseManager.DatabaseManager;
+import com.qx.server.DatabaseManager.DatabaseManager;
 
 public class Service extends Thread {
     private final Socket sock;
@@ -25,15 +25,15 @@ public class Service extends Thread {
             String username = sin.nextLine();
             String password = sin.nextLine();
 
+            AccountHandler accountHandler = new AccountHandler(databaseManager);
+
             if (type == "login") {
-                LoginHandler loginHandler = new LoginHandler(databaseManager);
-                if (!loginHandler.login(username, password)) {
+                if (!accountHandler.login(username, password)) {
                     sout.println("500");
                     return;
                 }
             } else if (type == "register") {
-                RegisterHandler registerHandler = new RegisterHandler(databaseManager);
-                if (!registerHandler.register(username, password))
+                if (!accountHandler.register(username, password))
                     sout.println("500");
                 else
                     sout.println("200");

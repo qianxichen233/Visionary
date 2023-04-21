@@ -1,4 +1,4 @@
-package DatabaseManager;
+package com.qx.server.DatabaseManager;
 
 import java.sql.*;
 import java.text.SimpleDateFormat;
@@ -71,8 +71,8 @@ public class DatabaseManager {
             sql = "USE " + database;
             stmt.executeUpdate(sql);
 
-            importSQL(stmt, "./DatabaseManager/clear.sql");
-            importSQL(stmt, "./DatabaseManager/DDL.sql");
+            importSQL(stmt, "./src/sqls/clear.sql");
+            importSQL(stmt, "./src/sqls/DDL.sql");
             stmt.close();
         } catch (Exception e) {
             System.out.println(e);
@@ -82,12 +82,12 @@ public class DatabaseManager {
     private void connect() {
         try {
             conn = DriverManager.getConnection(url + database, username, password);
-        } catch (SQLException e) {
+        } catch (Exception e) {
             System.out.println(e);
         }
     }
 
-    public void addUser(String username, String password) {
+    public boolean addUser(String username, String password) {
         String sql = "INSERT INTO user VALUES(?, ?)";
         try {
             PreparedStatement s = conn.prepareStatement(sql);
@@ -95,11 +95,12 @@ public class DatabaseManager {
             s.setString(2, password);
             s.executeQuery();
         } catch (Exception e) {
-            System.out.println(e);
+            return false;
         }
+        return true;
     }
 
-    public void addDrawing(String ID, String username) {
+    public boolean addDrawing(String ID, String username) {
         String sql = "INSERT INTO drawing VALUES(?, ?, ?)";
         String now = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
         try {
@@ -109,8 +110,9 @@ public class DatabaseManager {
             s.setString(3, now);
             s.executeQuery();
         } catch (Exception e) {
-            System.out.println(e);
+            return false;
         }
+        return true;
     }
 
     public String getUserPassword(String username) {

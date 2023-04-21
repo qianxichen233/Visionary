@@ -1,9 +1,12 @@
+package com.qx.server;
+
 import java.net.*;
 
-import DatabaseManager.DatabaseManager;
+import com.qx.server.DatabaseManager.DatabaseManager;
 
 import java.io.*;
-import Service.Service;
+
+import com.qx.server.Service.Service;
 
 public class server {
     public static void main(String[] args) {

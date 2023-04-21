@@ -1,4 +1,4 @@
-package Toolbar;
+package com.qx.client.Toolbar;
 
 import java.awt.event.*;
 import javax.swing.*;
@@ -55,7 +55,7 @@ public class SizePanel extends JPanel {
             @Override
             public void keyReleased(KeyEvent e) {
                 int current = Integer.parseInt(sizeField.getText());
-                toolbar.onSizeChange(current);
+                SizePanel.this.toolbar.onSizeChange(current);
             }
 
             @Override

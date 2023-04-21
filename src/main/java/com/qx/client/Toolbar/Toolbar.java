@@ -1,10 +1,10 @@
-package Toolbar;
+package com.qx.client.Toolbar;
 
 import java.awt.*;
 import javax.swing.*;
 
-import Canvas.Canvas;
-import Toolbar.Buttons.*;
+import com.qx.client.Canvas.Canvas;
+import com.qx.client.Toolbar.Buttons.*;
 
 public class Toolbar extends JPanel {
     private static final int width = 450;

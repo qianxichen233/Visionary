@@ -1,6 +1,6 @@
-package Toolbar.Buttons;
+package com.qx.client.Toolbar.Buttons;
 
-import Toolbar.*;
+import com.qx.client.Toolbar.*;
 
 import javax.swing.JButton;
 import java.awt.event.*;
@@ -31,7 +31,7 @@ public class LoadButton extends JButton {
                 if (fd.getFile() == null)
                     return;
                 String path = fd.getDirectory() + fd.getFile();
-                toolbar.onLoad(path);
+                LoadButton.this.toolbar.onLoad(path);
             }
         });
     }
