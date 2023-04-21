@@ -31,10 +31,12 @@ public class DrawingListPanel extends MyPanel {
         header.setBounds(0, 0, jf.getWidth(), 50);
 
         drawingList = new DrawingList(this);
-        drawingList.setBounds(0, 50, jf.getWidth(), jf.getHeight() - 50);
+        JScrollPane scroller = new JScrollPane(drawingList);
+        drawingList.scroller = scroller;
+        scroller.setBounds(0, 50, jf.getWidth(), jf.getHeight() - 50);
 
         jf.add(header);
-        jf.add(drawingList);
+        jf.add(scroller);
 
         new getDrawings(this).start();
 
@@ -163,6 +165,7 @@ class DrawingList extends JPanel {
     public static final int column = 4;
 
     private DrawingListPanel panel;
+    public JScrollPane scroller;
 
     public DrawingList(DrawingListPanel panel) {
         this.panel = panel;
@@ -176,52 +179,97 @@ class DrawingList extends JPanel {
         repaint();
 
         if (!panel.drawingFetched) {
+            setLayout(null);
             JLabel loading = new JLabel("Loading...");
             loading.setFont(new Font(loading.getFont().getName(), Font.BOLD, 24));
             int width = (int) loading.getPreferredSize().getWidth();
             int height = (int) loading.getPreferredSize().getHeight();
-            System.out.println(width);
             loading.setBounds((getWidth() - width) / 2, (getHeight() - height) / 2, width, 30);
             add(loading);
             return;
         }
 
         int gap = (getWidth() - column * DrawingWidth) / (column + 1);
-        int curX = gap;
-        int curY = 20;
-        for (int i = 0; i < panel.drawings.size(); ++i) {
-            if (i != 0 && i % column == 0) {
-                curX = gap;
-                curY += DrawingHeight + 20;
+
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        add(getPlaceholder());
+
+        for (int i = 0; i < Math.ceil((double) panel.drawings.size() / column); ++i) {
+            JPanel row = new JPanel();
+            row.setBackground(getBackground());
+            row.setPreferredSize(new Dimension(getWidth(), DrawingHeight));
+            row.setLayout(new GridBagLayout());
+            GridBagConstraints c = new GridBagConstraints();
+            c.fill = GridBagConstraints.HORIZONTAL;
+            c.anchor = GridBagConstraints.NORTHWEST;
+            c.weightx = 1;
+            c.weighty = 1;
+            for (int j = 0; j < column; ++j) {
+                c.gridx = j;
+                if (j == column - 1)
+                    c.insets = new Insets(0, gap, 0, gap);
+                else
+                    c.insets = new Insets(0, gap, 0, 0);
+
+                if (i * column + j >= panel.drawings.size()) {
+                    JPanel placeholder = new JPanel();
+                    placeholder.setPreferredSize(new Dimension(DrawingWidth, DrawingHeight));
+                    placeholder.setBackground(getBackground());
+                    row.add(placeholder, c);
+                    continue;
+                }
+
+                DrawingItem item = new DrawingItem(this, panel.drawings.get(i * column + j));
+                item.setPreferredSize(new Dimension(DrawingWidth, DrawingHeight));
+                row.add(item, c);
             }
 
-            DrawingItem item = new DrawingItem(this, panel.drawings.get(i));
-            item.setBounds(curX, curY, DrawingWidth, DrawingHeight);
-            add(item);
-            curX += DrawingWidth + gap;
+            add(row);
+            add(getPlaceholder());
         }
+
+        validate();
         repaint();
+        scroller.validate();
+        scroller.repaint();
     }
 
     public void onClick(Drawing drawing) {
         panel.clickDrawing(drawing);
     }
+
+    public JPanel getPlaceholder() {
+        JPanel placeholder = new JPanel();
+        placeholder.setBackground(getBackground());
+        placeholder.setPreferredSize(new Dimension(getWidth(), 20));
+        return placeholder;
+    }
 }
 
 class DrawingItem extends JPanel {
+    private static final String newText = "New Drawing";
+    private static final String openText = "Open Local Drawing";
+
     private Drawing drawing;
     private DrawingList listPanel;
+    private String type;
 
     private class onClickListener implements MouseListener {
         private Drawing drawing;
+        private String type;
 
         public onClickListener(Drawing drawing) {
             this.drawing = drawing;
         }
 
+        public onClickListener(String type) {
+            this.type = type;
+        }
+
         @Override
         public void mouseClicked(MouseEvent e) {
-            listPanel.onClick(drawing);
+            if (drawing != null)
+                listPanel.onClick(drawing);
         }
 
         @Override
@@ -251,25 +299,37 @@ class DrawingItem extends JPanel {
         addMouseListener(new onClickListener(drawing));
     }
 
-    public DrawingItem(DrawingList listPanel) {
+    public DrawingItem(DrawingList listPanel, String type) {
         this.listPanel = listPanel;
-        JPanel titlePanel = new JPanel(new GridBagLayout());
-        JLabel title = new JLabel("New Drawing");
-        titlePanel.add(title);
-
-        setLayout(new GridBagLayout());
-        add(titlePanel);
+        this.type = type;
+        addMouseListener(new onClickListener(this.type));
     }
 
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.setColor(Color.red);
-        int width = g.getFontMetrics().stringWidth(drawing.filename);
-        g.drawString(drawing.filename, (getWidth() - width) / 2, getHeight() / 3);
-        width = g.getFontMetrics().stringWidth(drawing.createdAt);
-        g.drawString(drawing.createdAt, (getWidth() - width) / 2, 2 * getHeight() / 3);
+
+        if (drawing != null) {
+            g.setColor(Color.GRAY);
+            int width = g.getFontMetrics().stringWidth(drawing.filename);
+            g.drawString(drawing.filename, (getWidth() - width) / 2, getHeight() / 3);
+            width = g.getFontMetrics().stringWidth(drawing.createdAt);
+            g.drawString(drawing.createdAt, (getWidth() - width) / 2, 2 * getHeight() / 3);
+        } else if (type == "new") {
+            g.setColor(Color.GRAY);
+            int width = g.getFontMetrics().stringWidth(newText);
+            g.drawString(newText, (getWidth() - width) / 2, getHeight() / 2);
+        } else if (type == "open") {
+            g.setColor(Color.GRAY);
+            int width = g.getFontMetrics().stringWidth(openText);
+            g.drawString(openText, (getWidth() - width) / 2, getHeight() / 2);
+        }
     }
+
+    // @Override
+    // public Dimension getPreferredSize() {
+    // return new Dimension(getWidth(), getHeight());
+    // }
 }
 
 class getDrawings extends Thread {
