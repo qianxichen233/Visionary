@@ -1,4 +1,4 @@
-package com.qx.client.Toolbar;
+package client.Toolbar;
 
 import java.awt.event.*;
 import javax.swing.*;

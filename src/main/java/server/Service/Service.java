@@ -1,10 +1,10 @@
-package com.qx.server.Service;
+package server.Service;
 
 import java.net.*;
 import java.io.*;
 import java.util.*;
 
-import com.qx.server.DatabaseManager.DatabaseManager;
+import server.DatabaseManager.DatabaseManager;
 
 public class Service extends Thread {
     private final Socket sock;

@@ -1,10 +1,10 @@
-package com.qx.client;
+package client;
 
 import java.awt.*;
 import javax.swing.*;
 
-import com.qx.client.Toolbar.Toolbar;
-import com.qx.client.Canvas.Canvas;
+import client.Canvas.Canvas;
+import client.Toolbar.Toolbar;
 
 public class client {
     public static void main(String[] args) {

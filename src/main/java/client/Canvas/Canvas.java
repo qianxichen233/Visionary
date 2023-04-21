@@ -1,4 +1,4 @@
-package com.qx.client.Canvas;
+package client.Canvas;
 
 import java.awt.*;
 import java.awt.event.*;

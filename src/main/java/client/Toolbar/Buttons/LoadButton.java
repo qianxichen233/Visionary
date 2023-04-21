@@ -1,8 +1,9 @@
-package com.qx.client.Toolbar.Buttons;
-
-import com.qx.client.Toolbar.*;
+package client.Toolbar.Buttons;
 
 import javax.swing.JButton;
+
+import client.Toolbar.*;
+
 import java.awt.event.*;
 import java.awt.*;
 

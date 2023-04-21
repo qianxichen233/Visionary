@@ -1,9 +1,9 @@
-package com.qx.server.Service;
-
-import com.qx.server.DatabaseManager.DatabaseManager;
+package server.Service;
 
 import com.password4j.Hash;
 import com.password4j.Password;
+
+import server.DatabaseManager.DatabaseManager;
 
 public class AccountHandler {
     private final DatabaseManager databaseManager;

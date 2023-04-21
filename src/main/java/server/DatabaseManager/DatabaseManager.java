@@ -1,4 +1,4 @@
-package com.qx.server.DatabaseManager;
+package server.DatabaseManager;
 
 import java.sql.*;
 import java.text.SimpleDateFormat;
