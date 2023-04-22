@@ -2,6 +2,8 @@ package client.Canvas;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.AffineTransform;
+
 import javax.swing.*;
 
 import client.Panel.DrawingPanel;
@@ -25,6 +27,9 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
     private volatile int size = defaultSize;
 
     private DrawingPanel panel;
+
+    private int prevX = -1;
+    private int prevY = -1;
 
     public Canvas(DrawingPanel panel) {
         super();
@@ -68,8 +73,35 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
     private void draw(int x, int y, String color) {
         Graphics g = bufferedImage.getGraphics();
         g.setColor(Color.decode(color));
-        g.fillOval(x - (size / 2), y - (size / 2), size, size);
+        g.fillOval(x - size / 2, y - size / 2, size, size);
+        autoFill(x, y, g);
+
+        prevX = x;
+        prevY = y;
+
         repaint();
+    }
+
+    private void autoFill(int x, int y, Graphics g) {
+        if (prevX == -1 || prevY == -1)
+            return;
+
+        int Xdiff = x - prevX;
+        int Ydiff = y - prevY;
+        double dist = Math.sqrt(Ydiff * Ydiff + Xdiff * Xdiff);
+        if (dist == 0)
+            return;
+        double angle = Math.acos(Xdiff / dist);
+        angle = Ydiff < 0 ? -angle : angle;
+        Rectangle rect = new Rectangle((int) Math.ceil(prevX + size * Math.sin(angle) / 2),
+                (int) Math.ceil(prevY - size * Math.cos(angle) / 2), (int) Math.ceil(dist), size);
+
+        Graphics2D g2d = (Graphics2D) g;
+        AffineTransform old = g2d.getTransform();
+        g2d.rotate(angle, rect.x, rect.y);
+        g2d.draw(rect);
+        g2d.fill(rect);
+        g2d.setTransform(old);
     }
 
     public void saveAsImage(String path) {
@@ -121,6 +153,8 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 
     @Override
     public void mouseReleased(MouseEvent e) {
+        prevX = -1;
+        prevY = -1;
     }
 
     @Override
@@ -129,5 +163,7 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 
     @Override
     public void mouseExited(MouseEvent e) {
+        prevX = -1;
+        prevY = -1;
     }
 }
