@@ -16,19 +16,11 @@ import client.ClientInstance;
 import client.Panel.utils.*;
 import client.utils.*;
 
-public class LoginPanel {
-    private final ClientInstance client;
-
-    private JFrame jf;
+public class LoginPanel extends MyPanel {
     LoginForm loginForm;
 
     public LoginPanel(ClientInstance client) {
-        this.client = client;
-        jf = client.jf;
-        jf.getContentPane().removeAll();
-        jf.getContentPane().invalidate();
-        jf.getContentPane().validate();
-        jf.getContentPane().repaint();
+        super(client);
 
         loginForm = new LoginForm(this);
         loginForm.setBounds(
@@ -39,7 +31,6 @@ public class LoginPanel {
         jf.add(loginForm);
 
         jf.setLayout(null);
-        jf.getContentPane().setBackground(Color.decode("#394e5e"));
         jf.getContentPane().repaint();
         jf.setVisible(true);
     }

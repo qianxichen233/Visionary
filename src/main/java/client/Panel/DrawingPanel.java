@@ -13,19 +13,15 @@ import client.ClientInstance;
 import client.Canvas.Canvas;
 import client.Toolbar.Toolbar;
 
-public class DrawingPanel {
-    private final ClientInstance client;
-
+public class DrawingPanel extends MyPanel {
     private Socket sock;
     public String filename;
     private int ID;
 
-    private JFrame jf;
-
     private boolean newDrawing;
 
     public DrawingPanel(ClientInstance client, Socket sock, String filename, BufferedImage bufferedImage, int ID) {
-        this.client = client;
+        super(client);
         this.sock = sock;
         this.filename = filename;
         this.ID = ID;
@@ -34,7 +30,7 @@ public class DrawingPanel {
     }
 
     public DrawingPanel(ClientInstance client, Socket sock, String filename, BufferedImage bufferedImage) {
-        this.client = client;
+        super(client);
         this.sock = sock;
         this.filename = filename;
         newDrawing = true;
@@ -42,7 +38,7 @@ public class DrawingPanel {
     }
 
     public DrawingPanel(ClientInstance client, Socket sock, String filename) {
-        this.client = client;
+        super(client);
         this.sock = sock;
         this.filename = filename;
         newDrawing = true;
@@ -50,37 +46,23 @@ public class DrawingPanel {
     }
 
     private void initWithImage(BufferedImage image) {
-        jf = client.jf;
-        jf.getContentPane().removeAll();
-        jf.getContentPane().invalidate();
-        jf.getContentPane().validate();
-        jf.getContentPane().repaint();
-
         Canvas canvas = new Canvas(this, image);
         Toolbar toolbar = new Toolbar(canvas, this);
         jf.add(canvas);
         jf.add(toolbar);
 
         jf.setLayout(null);
-        jf.getContentPane().setBackground(Color.decode("#394e5e"));
         jf.getContentPane().repaint();
         jf.setVisible(true);
     }
 
     private void initWithoutImage() {
-        jf = client.jf;
-        jf.getContentPane().removeAll();
-        jf.getContentPane().invalidate();
-        jf.getContentPane().validate();
-        jf.getContentPane().repaint();
-
         Canvas canvas = new Canvas(this);
         Toolbar toolbar = new Toolbar(canvas, this);
         jf.add(canvas);
         jf.add(toolbar);
 
         jf.setLayout(null);
-        jf.getContentPane().setBackground(Color.decode("#394e5e"));
         jf.getContentPane().repaint();
         jf.setVisible(true);
     }

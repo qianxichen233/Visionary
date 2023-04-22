@@ -16,19 +16,11 @@ import client.ClientInstance;
 import client.Panel.utils.*;
 import client.utils.*;
 
-public class RegisterPanel {
-    private final ClientInstance client;
-
-    private JFrame jf;
+public class RegisterPanel extends MyPanel {
     RegisterForm registerForm;
 
     public RegisterPanel(ClientInstance client) {
-        this.client = client;
-        jf = client.jf;
-        jf.getContentPane().removeAll();
-        jf.getContentPane().invalidate();
-        jf.getContentPane().validate();
-        jf.getContentPane().repaint();
+        super(client);
 
         registerForm = new RegisterForm(this);
         registerForm.setBounds(
@@ -39,7 +31,6 @@ public class RegisterPanel {
         jf.add(registerForm);
 
         jf.setLayout(null);
-        jf.getContentPane().setBackground(Color.decode("#394e5e"));
         jf.getContentPane().repaint();
         jf.setVisible(true);
     }
