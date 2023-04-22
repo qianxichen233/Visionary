@@ -13,7 +13,7 @@ public class Toolbar extends JPanel {
     private static final int padding = 30;
 
     private Canvas canvas;
-    private String filename;
+    private DrawingPanel panel;
 
     String mainColor = Canvas.defaultMainColor;
     String secondaryColor = Canvas.defaultSecondaryColor;
@@ -24,9 +24,11 @@ public class Toolbar extends JPanel {
     private SaveButton saveButton;
     private LoadButton loadButton;
     private SaveRemoteButton saveRemoteButton;
+    private ReturnButton returnButton;
 
-    public Toolbar(Canvas canvas) {
+    public Toolbar(Canvas canvas, DrawingPanel panel) {
         super();
+        this.panel = panel;
 
         this.canvas = canvas;
 
@@ -39,12 +41,14 @@ public class Toolbar extends JPanel {
         saveButton = new SaveButton(this, "Save");
         loadButton = new LoadButton(this, "Load");
         saveRemoteButton = new SaveRemoteButton(this, "Save Remote");
+        returnButton = new ReturnButton(this, "Back to My Galary");
 
         add(colorPanel);
         add(sizePanel);
         add(saveButton);
         add(loadButton);
         add(saveRemoteButton);
+        add(returnButton);
     }
 
     void onMainColorChange(String color) {
@@ -74,6 +78,10 @@ public class Toolbar extends JPanel {
 
     public void onLoad(String path) {
         canvas.loadImage(path);
+    }
+
+    public void onReturn() {
+        panel.onReturn();
     }
 
     public static int getActualWidth() {

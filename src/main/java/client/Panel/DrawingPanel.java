@@ -3,6 +3,7 @@ package client.Panel;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.net.Socket;
+import java.util.Scanner;
 import java.io.*;
 
 import javax.swing.*;
@@ -17,22 +18,46 @@ public class DrawingPanel {
 
     private Socket sock;
     private String filename;
+    private int ID;
 
     private JFrame jf;
+
+    private boolean newDrawing;
+
+    public DrawingPanel(ClientInstance client, Socket sock, String filename, BufferedImage bufferedImage, int ID) {
+        this.client = client;
+        this.sock = sock;
+        this.filename = filename;
+        this.ID = ID;
+        newDrawing = false;
+        initWithImage(bufferedImage);
+    }
 
     public DrawingPanel(ClientInstance client, Socket sock, String filename, BufferedImage bufferedImage) {
         this.client = client;
         this.sock = sock;
         this.filename = filename;
+        newDrawing = true;
+        initWithImage(bufferedImage);
+    }
 
+    public DrawingPanel(ClientInstance client, Socket sock, String filename) {
+        this.client = client;
+        this.sock = sock;
+        this.filename = filename;
+        newDrawing = true;
+        initWithoutImage();
+    }
+
+    private void initWithImage(BufferedImage image) {
         jf = client.jf;
         jf.getContentPane().removeAll();
         jf.getContentPane().invalidate();
         jf.getContentPane().validate();
         jf.getContentPane().repaint();
 
-        Canvas canvas = new Canvas(this, bufferedImage);
-        Toolbar toolbar = new Toolbar(canvas);
+        Canvas canvas = new Canvas(this, image);
+        Toolbar toolbar = new Toolbar(canvas, this);
         jf.add(canvas);
         jf.add(toolbar);
 
@@ -42,11 +67,7 @@ public class DrawingPanel {
         jf.setVisible(true);
     }
 
-    public DrawingPanel(ClientInstance client, Socket sock, String filename) {
-        this.client = client;
-        this.sock = sock;
-        this.filename = filename;
-
+    private void initWithoutImage() {
         jf = client.jf;
         jf.getContentPane().removeAll();
         jf.getContentPane().invalidate();
@@ -54,7 +75,7 @@ public class DrawingPanel {
         jf.getContentPane().repaint();
 
         Canvas canvas = new Canvas(this);
-        Toolbar toolbar = new Toolbar(canvas);
+        Toolbar toolbar = new Toolbar(canvas, this);
         jf.add(canvas);
         jf.add(toolbar);
 
@@ -79,22 +100,50 @@ public class DrawingPanel {
     }
 
     public void saveAsImageRemote(BufferedImage image) {
-        try {
-            PrintStream sout = new PrintStream(sock.getOutputStream());
-            sout.println("save");
-            sout.println(filename);
+        if (newDrawing) {
+            try {
+                Scanner sin = new Scanner(sock.getInputStream());
+                PrintStream sout = new PrintStream(sock.getOutputStream());
+                sout.println("save");
+                sout.println(filename);
 
-            OutputStream out = sock.getOutputStream();
+                OutputStream out = sock.getOutputStream();
 
-            ByteArrayOutputStream bScrn = new ByteArrayOutputStream();
-            ImageIO.write(image, "png", bScrn);
-            byte imgBytes[] = bScrn.toByteArray();
-            bScrn.close();
+                ByteArrayOutputStream bScrn = new ByteArrayOutputStream();
+                ImageIO.write(image, "png", bScrn);
+                byte imgBytes[] = bScrn.toByteArray();
+                bScrn.close();
 
-            out.write((Integer.toString(imgBytes.length)).getBytes());
-            out.write(imgBytes, 0, imgBytes.length);
-        } catch (Exception e) {
-            System.out.println(e);
+                out.write((Integer.toString(imgBytes.length)).getBytes());
+                out.write(imgBytes, 0, imgBytes.length);
+                ID = Integer.parseInt(sin.nextLine());
+                newDrawing = false;
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        } else {
+            try {
+                PrintStream sout = new PrintStream(sock.getOutputStream());
+                sout.println("update");
+                sout.println(ID);
+                sout.println(filename);
+
+                OutputStream out = sock.getOutputStream();
+
+                ByteArrayOutputStream bScrn = new ByteArrayOutputStream();
+                ImageIO.write(image, "png", bScrn);
+                byte imgBytes[] = bScrn.toByteArray();
+                bScrn.close();
+
+                out.write((Integer.toString(imgBytes.length)).getBytes());
+                out.write(imgBytes, 0, imgBytes.length);
+            } catch (Exception e) {
+                System.out.println(e);
+            }
         }
+    }
+
+    public void onReturn() {
+        client.drawingListPage();
     }
 }

@@ -59,19 +59,12 @@ public class Service extends Thread {
             // after login
             sout.println("200");
 
-            // ArrayList<Drawing> drawings = databaseManager.getUserDrawings(username);
-            // sout.println(drawings.size());
-            // for (Drawing drawing : drawings) {
-            // sout.println(drawing.filename);
-            // sout.println(drawing.createdAt);
-            // }
-
             while (true) {
                 String operation = sin.nextLine();
                 if (operation.equals("save")) {
                     String filename = sin.nextLine();
                     String hash = receiveImage(sock, System.getProperty("user.dir") + "/userImage/" + username);
-                    databaseManager.addDrawing(hash, username, filename);
+                    sout.println(databaseManager.addDrawing(hash, username, filename));
                 } else if (operation.equals("list")) {
                     ArrayList<Drawing> drawings = databaseManager.getUserDrawings(username);
                     sout.println(drawings.size());
@@ -85,6 +78,16 @@ public class Service extends Thread {
                     String hash = databaseManager.getDrawingHash(ID);
                     String path = System.getProperty("user.dir") + "/userImage/" + username + "/" + hash + ".png";
                     sendImage(sock, path);
+                } else if (operation.equals("update")) {
+                    int ID = Integer.parseInt(sin.nextLine());
+                    String filename = sin.nextLine();
+                    String previousHash = databaseManager.getDrawingHash(ID);
+                    String newHash = receiveImage(sock, System.getProperty("user.dir") + "/userImage/" + username);
+                    databaseManager.updateDrawing(ID, newHash, filename);
+                    String path = System.getProperty("user.dir") + "/userImage/" + username + "/" + previousHash
+                            + ".png";
+                    File previousImage = new File(path);
+                    previousImage.delete();
                 }
             }
 

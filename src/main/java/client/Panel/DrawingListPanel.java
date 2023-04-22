@@ -32,6 +32,7 @@ public class DrawingListPanel extends MyPanel {
 
         drawingList = new DrawingList(this);
         JScrollPane scroller = new JScrollPane(drawingList);
+        scroller.setBorder(null);
         drawingList.scroller = scroller;
         scroller.setBounds(0, 50, jf.getWidth(), jf.getHeight() - 50);
 
@@ -50,7 +51,7 @@ public class DrawingListPanel extends MyPanel {
             PrintStream sout = new PrintStream(sock.getOutputStream());
             sout.println("get");
             sout.println(drawing.ID);
-            client.drawingPage(receiveImage(sock), drawing.filename);
+            client.drawingPage(receiveImage(sock), drawing.filename, drawing.ID);
         } catch (IOException e) {
             System.out.println(e);
         }
@@ -76,7 +77,7 @@ public class DrawingListPanel extends MyPanel {
             System.out.println(e);
             return;
         }
-        client.drawingPage(image, fd.getFile());
+        client.drawingPage(image, fd.getFile().substring(0, fd.getFile().lastIndexOf('.')));
     }
 
     public void newDrawing() {
@@ -221,12 +222,47 @@ class DrawingList extends JPanel {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         add(getPlaceholder());
 
+        JPanel itemRow = new JPanel();
+        itemRow.setBackground(getBackground());
+        itemRow.setPreferredSize(new Dimension(getWidth(), DrawingHeight));
+        itemRow.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.anchor = GridBagConstraints.NORTHWEST;
+        c.weightx = 1;
+        c.weighty = 1;
+
+        for (int j = 0; j < column; ++j) {
+            c.gridx = j;
+            if (j == column - 1)
+                c.insets = new Insets(0, gap, 0, gap);
+            else
+                c.insets = new Insets(0, gap, 0, 0);
+
+            if (j >= 2) {
+                JPanel placeholder = new JPanel();
+                placeholder.setPreferredSize(new Dimension(DrawingWidth, DrawingHeight));
+                placeholder.setBackground(getBackground());
+                itemRow.add(placeholder, c);
+                continue;
+            } else if (j == 1) {
+                DrawingItem item = new DrawingItem(this, "new");
+                item.setPreferredSize(new Dimension(DrawingWidth, DrawingHeight));
+                itemRow.add(item, c);
+            } else {
+                DrawingItem item = new DrawingItem(this, "open");
+                item.setPreferredSize(new Dimension(DrawingWidth, DrawingHeight));
+                itemRow.add(item, c);
+            }
+        }
+        add(itemRow);
+        add(getPlaceholder());
+
         for (int i = 0; i < Math.ceil((double) panel.drawings.size() / column); ++i) {
             JPanel row = new JPanel();
             row.setBackground(getBackground());
             row.setPreferredSize(new Dimension(getWidth(), DrawingHeight));
             row.setLayout(new GridBagLayout());
-            GridBagConstraints c = new GridBagConstraints();
             c.fill = GridBagConstraints.HORIZONTAL;
             c.anchor = GridBagConstraints.NORTHWEST;
             c.weightx = 1;
@@ -254,42 +290,6 @@ class DrawingList extends JPanel {
             add(row);
             add(getPlaceholder());
         }
-
-        JPanel row = new JPanel();
-        row.setBackground(getBackground());
-        row.setPreferredSize(new Dimension(getWidth(), DrawingHeight));
-        row.setLayout(new GridBagLayout());
-        GridBagConstraints c = new GridBagConstraints();
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.anchor = GridBagConstraints.NORTHWEST;
-        c.weightx = 1;
-        c.weighty = 1;
-
-        for (int j = 0; j < column; ++j) {
-            c.gridx = j;
-            if (j == column - 1)
-                c.insets = new Insets(0, gap, 0, gap);
-            else
-                c.insets = new Insets(0, gap, 0, 0);
-
-            if (j >= 2) {
-                JPanel placeholder = new JPanel();
-                placeholder.setPreferredSize(new Dimension(DrawingWidth, DrawingHeight));
-                placeholder.setBackground(getBackground());
-                row.add(placeholder, c);
-                continue;
-            } else if (j == 1) {
-                DrawingItem item = new DrawingItem(this, "new");
-                item.setPreferredSize(new Dimension(DrawingWidth, DrawingHeight));
-                row.add(item, c);
-            } else {
-                DrawingItem item = new DrawingItem(this, "open");
-                item.setPreferredSize(new Dimension(DrawingWidth, DrawingHeight));
-                row.add(item, c);
-            }
-        }
-        add(row);
-        add(getPlaceholder());
 
         scroller.validate();
         scroller.repaint();

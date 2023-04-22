@@ -98,15 +98,35 @@ public class DatabaseManager {
         return true;
     }
 
-    public boolean addDrawing(String hash, String username, String filename) {
+    public int addDrawing(String hash, String username, String filename) {
         String sql = "INSERT INTO drawing(hash, username, filename, createdAt) VALUES(?, ?, ?, ?)";
         String now = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+        int newID = -1;
         try {
-            PreparedStatement s = conn.prepareStatement(sql);
+            PreparedStatement s = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             s.setString(1, hash);
             s.setString(2, username);
             s.setString(3, filename);
             s.setString(4, now);
+            s.executeQuery();
+            ResultSet rs = s.getGeneratedKeys();
+            rs.next();
+            newID = rs.getInt(1);
+        } catch (Exception e) {
+            return -1;
+        }
+        return newID;
+    }
+
+    public boolean updateDrawing(int ID, String hash, String filename) {
+        String sql = "UPDATE drawing SET hash = ?, filename = ?, createdAt = ? WHERE ID = ?";
+        String now = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+        try {
+            PreparedStatement s = conn.prepareStatement(sql);
+            s.setString(1, hash);
+            s.setString(2, filename);
+            s.setString(3, now);
+            s.setInt(4, ID);
             s.executeQuery();
         } catch (Exception e) {
             return false;

@@ -52,6 +52,10 @@ public class ClientInstance extends Thread {
         new DrawingPanel(this, sock, "untitled");
     }
 
+    public void drawingPage(BufferedImage image, String filename, int ID) {
+        new DrawingPanel(this, sock, filename, image, ID);
+    }
+
     public void drawingPage(BufferedImage image, String filename) {
         new DrawingPanel(this, sock, filename, image);
     }
