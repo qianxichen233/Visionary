@@ -68,7 +68,7 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
     private void draw(int x, int y, String color) {
         Graphics g = bufferedImage.getGraphics();
         g.setColor(Color.decode(color));
-        g.fillOval(x, y, size, size);
+        g.fillOval(x - (size / 2), y - (size / 2), size, size);
         repaint();
     }
 

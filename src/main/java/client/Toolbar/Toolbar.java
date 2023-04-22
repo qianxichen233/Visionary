@@ -42,10 +42,10 @@ public class Toolbar extends JPanel {
         currentHeight += ColorPanel.getCHeight();
         sizePanel = new SizePanel(this, currentHeight);
         currentHeight += SizePanel.getCHeight();
-        saveButton = new SaveButton(this, "Save", currentHeight);
+        saveButton = new SaveButton(this, "Export", currentHeight);
         currentHeight += SaveButton.height;
-        loadButton = new LoadButton(this, "Load", currentHeight);
-        currentHeight += LoadButton.height;
+        // loadButton = new LoadButton(this, "Load", currentHeight);
+        // currentHeight += LoadButton.height;
         saveRemoteButton = new SaveRemoteButton(this, "Save Remote", currentHeight);
         currentHeight += SaveRemoteButton.height;
         returnButton = new ReturnButton(this, "Back to My Galary", currentHeight);
@@ -56,7 +56,7 @@ public class Toolbar extends JPanel {
         add(colorPanel);
         add(sizePanel);
         add(saveButton);
-        add(loadButton);
+        // add(loadButton);
         add(saveRemoteButton);
         add(returnButton);
         add(filenamePanel);
