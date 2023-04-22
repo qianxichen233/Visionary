@@ -56,6 +56,33 @@ public class DrawingListPanel extends MyPanel {
         }
     }
 
+    public void openDrawing() {
+        FileDialog fd = new FileDialog(new Frame(), "Choose a file", FileDialog.LOAD);
+        fd.setDirectory(System.getProperty("user.dir"));
+        fd.setFilenameFilter(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.endsWith(".png");
+            }
+        });
+        fd.setVisible(true);
+        if (fd.getFile() == null)
+            return;
+        String path = fd.getDirectory() + fd.getFile();
+        BufferedImage image;
+        try {
+            image = ImageIO.read(new File(path));
+        } catch (Exception e) {
+            System.out.println(e);
+            return;
+        }
+        client.drawingPage(image, fd.getFile());
+    }
+
+    public void newDrawing() {
+        client.drawingPage();
+    }
+
     public void logout() {
         try {
             sock.close();
@@ -228,14 +255,58 @@ class DrawingList extends JPanel {
             add(getPlaceholder());
         }
 
-        validate();
-        repaint();
+        JPanel row = new JPanel();
+        row.setBackground(getBackground());
+        row.setPreferredSize(new Dimension(getWidth(), DrawingHeight));
+        row.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.anchor = GridBagConstraints.NORTHWEST;
+        c.weightx = 1;
+        c.weighty = 1;
+
+        for (int j = 0; j < column; ++j) {
+            c.gridx = j;
+            if (j == column - 1)
+                c.insets = new Insets(0, gap, 0, gap);
+            else
+                c.insets = new Insets(0, gap, 0, 0);
+
+            if (j >= 2) {
+                JPanel placeholder = new JPanel();
+                placeholder.setPreferredSize(new Dimension(DrawingWidth, DrawingHeight));
+                placeholder.setBackground(getBackground());
+                row.add(placeholder, c);
+                continue;
+            } else if (j == 1) {
+                DrawingItem item = new DrawingItem(this, "new");
+                item.setPreferredSize(new Dimension(DrawingWidth, DrawingHeight));
+                row.add(item, c);
+            } else {
+                DrawingItem item = new DrawingItem(this, "open");
+                item.setPreferredSize(new Dimension(DrawingWidth, DrawingHeight));
+                row.add(item, c);
+            }
+        }
+        add(row);
+        add(getPlaceholder());
+
         scroller.validate();
         scroller.repaint();
+        validate();
+        repaint();
     }
 
     public void onClick(Drawing drawing) {
         panel.clickDrawing(drawing);
+    }
+
+    public void openDrawing() {
+        panel.openDrawing();
+    }
+
+    public void newDrawing() {
+        panel.newDrawing();
     }
 
     public JPanel getPlaceholder() {
@@ -270,6 +341,10 @@ class DrawingItem extends JPanel {
         public void mouseClicked(MouseEvent e) {
             if (drawing != null)
                 listPanel.onClick(drawing);
+            else if (type == "new")
+                listPanel.newDrawing();
+            else if (type == "open")
+                listPanel.openDrawing();
         }
 
         @Override
@@ -325,11 +400,6 @@ class DrawingItem extends JPanel {
             g.drawString(openText, (getWidth() - width) / 2, getHeight() / 2);
         }
     }
-
-    // @Override
-    // public Dimension getPreferredSize() {
-    // return new Dimension(getWidth(), getHeight());
-    // }
 }
 
 class getDrawings extends Thread {
