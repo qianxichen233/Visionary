@@ -8,7 +8,7 @@ import java.util.*;
 
 public class ColorPanel extends JPanel {
     private static final int padding = 10;
-    private static final int height = 100;
+    public static final int height = 100;
     private static final int columns = 8;
     private static final int boxSize = 20;
     private static final int displayBoxSize = 30;
@@ -71,13 +71,13 @@ public class ColorPanel extends JPanel {
         }
     }
 
-    public ColorPanel(Toolbar toolbar) {
+    public ColorPanel(Toolbar toolbar, int Hoffset) {
         super();
         for (String color : defaultColorList)
             ColorList.add(color);
         int width = Toolbar.getActualWidth() - 2 * padding;
         this.toolbar = toolbar;
-        setBounds(padding, padding, width, height);
+        setBounds(padding, padding + Hoffset, width, height);
         setBackground(Color.white);
 
         int gap = (width - boxSize * columns) / (columns + 1);

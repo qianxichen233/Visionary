@@ -17,7 +17,7 @@ public class DrawingPanel {
     private final ClientInstance client;
 
     private Socket sock;
-    private String filename;
+    public String filename;
     private int ID;
 
     private JFrame jf;

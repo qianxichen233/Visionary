@@ -10,13 +10,14 @@ import java.awt.*;
 import java.io.*;
 
 public class LoadButton extends JButton {
+    public static final int height = 30;
     Toolbar toolbar;
 
-    public LoadButton(Toolbar toolbar, String title) {
+    public LoadButton(Toolbar toolbar, String title, int Hoffset) {
         super();
         this.toolbar = toolbar;
         setText(title);
-        setBounds(0, ColorPanel.getCHeight() + SizePanel.getCHeight() + 30, Toolbar.getActualWidth(), 30);
+        setBounds(0, Hoffset, Toolbar.getActualWidth(), height);
         addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

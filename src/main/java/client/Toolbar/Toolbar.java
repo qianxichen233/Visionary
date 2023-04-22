@@ -25,6 +25,7 @@ public class Toolbar extends JPanel {
     private LoadButton loadButton;
     private SaveRemoteButton saveRemoteButton;
     private ReturnButton returnButton;
+    private FilenamePanel filenamePanel;
 
     public Toolbar(Canvas canvas, DrawingPanel panel) {
         super();
@@ -36,12 +37,21 @@ public class Toolbar extends JPanel {
         setLayout(null);
         setBackground(Color.white);
 
-        colorPanel = new ColorPanel(this);
-        sizePanel = new SizePanel(this);
-        saveButton = new SaveButton(this, "Save");
-        loadButton = new LoadButton(this, "Load");
-        saveRemoteButton = new SaveRemoteButton(this, "Save Remote");
-        returnButton = new ReturnButton(this, "Back to My Galary");
+        int currentHeight = 0;
+        colorPanel = new ColorPanel(this, currentHeight);
+        currentHeight += ColorPanel.getCHeight();
+        sizePanel = new SizePanel(this, currentHeight);
+        currentHeight += SizePanel.getCHeight();
+        saveButton = new SaveButton(this, "Save", currentHeight);
+        currentHeight += SaveButton.height;
+        loadButton = new LoadButton(this, "Load", currentHeight);
+        currentHeight += LoadButton.height;
+        saveRemoteButton = new SaveRemoteButton(this, "Save Remote", currentHeight);
+        currentHeight += SaveRemoteButton.height;
+        returnButton = new ReturnButton(this, "Back to My Galary", currentHeight);
+        currentHeight += ReturnButton.height;
+        filenamePanel = new FilenamePanel(this, currentHeight);
+        currentHeight += FilenamePanel.getCHeight();
 
         add(colorPanel);
         add(sizePanel);
@@ -49,6 +59,7 @@ public class Toolbar extends JPanel {
         add(loadButton);
         add(saveRemoteButton);
         add(returnButton);
+        add(filenamePanel);
     }
 
     void onMainColorChange(String color) {
@@ -82,6 +93,14 @@ public class Toolbar extends JPanel {
 
     public void onReturn() {
         panel.onReturn();
+    }
+
+    public void setFilename(String filename) {
+        panel.filename = filename;
+    }
+
+    public String getFilename() {
+        return panel.filename;
     }
 
     public static int getActualWidth() {

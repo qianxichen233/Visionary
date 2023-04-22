@@ -8,13 +8,14 @@ import java.awt.event.*;
 import java.awt.*;
 
 public class SaveButton extends JButton {
+    public static final int height = 30;
     Toolbar toolbar;
 
-    public SaveButton(Toolbar toolbar, String title) {
+    public SaveButton(Toolbar toolbar, String title, int Hoffset) {
         super();
         this.toolbar = toolbar;
         setText(title);
-        setBounds(0, ColorPanel.getCHeight() + SizePanel.getCHeight(), Toolbar.getActualWidth(), 30);
+        setBounds(0, Hoffset, Toolbar.getActualWidth(), height);
         addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

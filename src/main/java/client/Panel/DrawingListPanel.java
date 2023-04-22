@@ -328,6 +328,7 @@ class DrawingItem extends JPanel {
     private class onClickListener implements MouseListener {
         private Drawing drawing;
         private String type;
+        private boolean couldTrigger = false;
 
         public onClickListener(Drawing drawing) {
             this.drawing = drawing;
@@ -337,8 +338,7 @@ class DrawingItem extends JPanel {
             this.type = type;
         }
 
-        @Override
-        public void mouseClicked(MouseEvent e) {
+        private void trigger() {
             if (drawing != null)
                 listPanel.onClick(drawing);
             else if (type == "new")
@@ -348,18 +348,23 @@ class DrawingItem extends JPanel {
         }
 
         @Override
-        public void mousePressed(MouseEvent e) {
+        public void mouseClicked(MouseEvent e) {
+        }
 
+        @Override
+        public void mousePressed(MouseEvent e) {
+            couldTrigger = true;
         }
 
         @Override
         public void mouseReleased(MouseEvent e) {
-
+            if (couldTrigger)
+                trigger();
         }
 
         @Override
         public void mouseExited(MouseEvent e) {
-
+            couldTrigger = false;
         }
 
         @Override

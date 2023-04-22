@@ -7,14 +7,14 @@ import java.text.*;
 
 public class SizePanel extends JPanel {
     private static final int padding = 10;
-    private static final int height = 30;
+    public static final int height = 30;
     public static final int _min = 2;
     public static final int _max = 99;
 
     JFormattedTextField sizeField;
     Toolbar toolbar;
 
-    SizePanel(Toolbar toolbar) {
+    SizePanel(Toolbar toolbar, int Hoffset) {
         super();
         this.toolbar = toolbar;
         int width = Toolbar.getActualWidth() - 2 * padding;
@@ -68,7 +68,7 @@ public class SizePanel extends JPanel {
         this.add(minus);
         this.add(sizeField);
         this.add(add);
-        setBounds(padding, padding + ColorPanel.getCHeight(), width, height);
+        setBounds(padding, padding + Hoffset, width, height);
         setLayout(null);
     }
 
