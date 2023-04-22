@@ -14,6 +14,7 @@ public class Toolbar extends JPanel {
 
     private Canvas canvas;
     private DrawingPanel panel;
+    private int mode = Canvas.mode_pen;
 
     String mainColor = Canvas.defaultMainColor;
     String secondaryColor = Canvas.defaultSecondaryColor;
@@ -22,10 +23,12 @@ public class Toolbar extends JPanel {
     private ColorPanel colorPanel;
     private SizePanel sizePanel;
     private SaveButton saveButton;
-    private LoadButton loadButton;
+    // private LoadButton loadButton;
     private SaveRemoteButton saveRemoteButton;
     private ReturnButton returnButton;
     private FilenamePanel filenamePanel;
+    private PenButton penButton;
+    private ShapePanel shapePanel;
 
     public Toolbar(Canvas canvas, DrawingPanel panel) {
         super();
@@ -42,7 +45,11 @@ public class Toolbar extends JPanel {
         currentHeight += ColorPanel.getCHeight();
         sizePanel = new SizePanel(this, currentHeight);
         currentHeight += SizePanel.getCHeight();
-        saveButton = new SaveButton(this, "Export", currentHeight);
+        penButton = new PenButton(this, "Pen", currentHeight);
+        currentHeight += PenButton.height;
+        shapePanel = new ShapePanel(this, currentHeight);
+        currentHeight += ShapePanel.getCHeight();
+        saveButton = new SaveButton(this, "Save", currentHeight);
         currentHeight += SaveButton.height;
         // loadButton = new LoadButton(this, "Load", currentHeight);
         // currentHeight += LoadButton.height;
@@ -55,6 +62,8 @@ public class Toolbar extends JPanel {
 
         add(colorPanel);
         add(sizePanel);
+        add(penButton);
+        add(shapePanel);
         add(saveButton);
         // add(loadButton);
         add(saveRemoteButton);
@@ -93,6 +102,11 @@ public class Toolbar extends JPanel {
 
     public void onReturn() {
         panel.onReturn();
+    }
+
+    public void setMode(int mode, String... args) {
+        this.mode = mode;
+        canvas.setMode(mode, args);
     }
 
     public void setFilename(String filename) {
