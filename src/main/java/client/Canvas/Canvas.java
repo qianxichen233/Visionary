@@ -235,6 +235,7 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 
         setMode(Canvas.mode_select);
         clip = img;
+        savedCanvas = MyUtils.deepCopy(mainCanvas);
         selectSt = new Point(0, 0);
         selectEd = new Point(img.getWidth(), img.getHeight());
         selected = true;
@@ -279,13 +280,13 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
         }
     }
 
-    // mouse events
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.drawImage(mainCanvas, 0, 0, null);
     }
 
+    // mouse events
     @Override
     public void mouseDragged(MouseEvent e) {
         if (mode == Canvas.mode_pen) {
