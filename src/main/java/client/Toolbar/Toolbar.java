@@ -40,50 +40,69 @@ public class Toolbar extends JPanel {
 
         int currentHeight = 0;
 
+        // Color divider
+        add(new TextPanel(this, "Color", currentHeight));
+        currentHeight += TextPanel.getCHeight();
+
         // color panel
         colorPanel = new ColorPanel(this, currentHeight);
         currentHeight += ColorPanel.getCHeight();
+        add(colorPanel);
 
         // color chooser
         chooseColorPanel = new ChooseColorPanel(this, currentHeight);
         currentHeight += ChooseColorPanel.getCHeight();
+        add(chooseColorPanel);
+
+        // Size divider
+        add(new TextPanel(this, "Size", currentHeight));
+        currentHeight += TextPanel.getCHeight();
 
         // size panel
         sizePanel = new SizePanel(this, currentHeight);
         currentHeight += SizePanel.getCHeight();
+        add(sizePanel);
+
+        // Mode divider
+        add(new TextPanel(this, "Mode", currentHeight));
+        currentHeight += TextPanel.getCHeight();
 
         // pen mode button
         penModePanel = new PenModePanel(this, currentHeight);
         currentHeight += PenModePanel.getCHeight();
+        add(penModePanel);
 
         // shape panel
         shapePanel = new ShapePanel(this, currentHeight);
         currentHeight += ShapePanel.getCHeight();
+        add(shapePanel);
+
+        // Operation divider
+        add(new TextPanel(this, "Operation", currentHeight));
+        currentHeight += TextPanel.getCHeight();
 
         // save button
-        saveButton = new SaveButton(this, "Save", currentHeight);
+        saveButton = new SaveButton(this, "Save To My Computer", currentHeight);
         currentHeight += SaveButton.height;
+        add(saveButton);
 
         // remote save button
         saveRemoteButton = new SaveRemoteButton(this, "Save Remote", currentHeight);
         currentHeight += SaveRemoteButton.height;
+        add(saveRemoteButton);
 
         // return button
         returnButton = new ReturnButton(this, "Back to My Galary", currentHeight);
         currentHeight += ReturnButton.height;
+        add(returnButton);
+
+        // Filename divider
+        add(new TextPanel(this, "Filename", currentHeight));
+        currentHeight += TextPanel.getCHeight();
 
         // filename panel
         filenamePanel = new FilenamePanel(this, currentHeight);
         currentHeight += FilenamePanel.getCHeight();
-
-        add(colorPanel);
-        add(chooseColorPanel);
-        add(sizePanel);
-        add(penModePanel);
-        add(shapePanel);
-        add(saveButton);
-        add(saveRemoteButton);
-        add(returnButton);
         add(filenamePanel);
     }
 
