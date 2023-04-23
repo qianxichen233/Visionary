@@ -4,6 +4,7 @@ import java.awt.*;
 import javax.swing.*;
 
 import client.Canvas.Canvas;
+import client.Canvas.ColorFiller;
 import client.Panel.DrawingPanel;
 import client.Toolbar.Buttons.*;
 
@@ -15,9 +16,9 @@ public class Toolbar extends JPanel {
     private DrawingPanel panel;
     private int mode = Canvas.mode_pen;
 
-    String mainColor = Canvas.defaultMainColor;
-    String secondaryColor = Canvas.defaultSecondaryColor;
-    int size = Canvas.defaultSize;
+    public String mainColor = Canvas.defaultMainColor;
+    public String secondaryColor = Canvas.defaultSecondaryColor;
+    public int size = Canvas.defaultSize;
 
     private ColorPanel colorPanel;
     private SizePanel sizePanel;
@@ -27,6 +28,7 @@ public class Toolbar extends JPanel {
     private FilenamePanel filenamePanel;
     private PenModePanel penModePanel;
     private ShapePanel shapePanel;
+    private ChooseColorPanel chooseColorPanel;
 
     public Toolbar(DrawingPanel panel) {
         super();
@@ -41,6 +43,10 @@ public class Toolbar extends JPanel {
         // color panel
         colorPanel = new ColorPanel(this, currentHeight);
         currentHeight += ColorPanel.getCHeight();
+
+        // color chooser
+        chooseColorPanel = new ChooseColorPanel(this, currentHeight);
+        currentHeight += ChooseColorPanel.getCHeight();
 
         // size panel
         sizePanel = new SizePanel(this, currentHeight);
@@ -71,6 +77,7 @@ public class Toolbar extends JPanel {
         currentHeight += FilenamePanel.getCHeight();
 
         add(colorPanel);
+        add(chooseColorPanel);
         add(sizePanel);
         add(penModePanel);
         add(shapePanel);
@@ -78,6 +85,14 @@ public class Toolbar extends JPanel {
         add(saveRemoteButton);
         add(returnButton);
         add(filenamePanel);
+    }
+
+    public void onMainColorChange(Color color) {
+        onMainColorChange(ColorFiller.convertRGBHex(color.getRGB()));
+    }
+
+    public void onSecondaryColorChange(Color color) {
+        onSecondaryColorChange(ColorFiller.convertRGBHex(color.getRGB()));
     }
 
     public void onMainColorChange(String color) {
@@ -119,6 +134,11 @@ public class Toolbar extends JPanel {
             shapePanel.setFocus(args[0]);
         }
         panel.canvas.setMode(mode, args);
+    }
+
+    public void chooseColor() {
+        Color color = JColorChooser.showDialog(new Frame(), "Choose a color", Color.decode(mainColor));
+        System.out.println(color.getRGB());
     }
 
     public void setFilename(String filename) {
