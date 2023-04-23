@@ -5,37 +5,47 @@ import java.awt.event.*;
 
 import javax.swing.*;
 
+import client.Canvas.ShapeDrawer.FormattedPoints;
 import client.Panel.DrawingPanel;
-import client.utils.MyUtils;
+import client.utils.*;
 
 import java.awt.image.BufferedImage;
 
 public class Canvas extends JPanel implements MouseListener, MouseMotionListener {
+    // panel layout
     private static final int width = 800;
     private static final int height = 700;
     private static final int padding = 30;
+
+    // canvas default values
     public static final Color backgroundColor = Color.WHITE;
     public static final String defaultMainColor = "#000000";
     public static final String defaultSecondaryColor = "#FFFFFF";
     public static final int defaultSize = 5;
 
+    // canvas modes
     public static final int mode_pen = 0;
     public static final int mode_shape = 1;
     public static final int mode_erase = 2;
     public static final int mode_pick = 3;
     public static final int mode_fill = 4;
+    public static final int mode_select = 5;
 
+    // canvas
     private BufferedImage mainCanvas;
     private BufferedImage savedCanvas;
 
+    // current status
     private volatile String mainColor = defaultMainColor;
     private volatile String secondaryColor = defaultSecondaryColor;
     private volatile int size = defaultSize;
+    private volatile int mode = mode_select;
 
+    // parent panel
     private DrawingPanel panel;
-    private Undoer undoer = new Undoer();
 
-    private int mode = mode_pen;
+    // undo controller
+    private Undoer undoer = new Undoer();
 
     // used for pen mode
     private int prevX = -1;
@@ -45,6 +55,20 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
     private String shape;
     private int startX = -1;
     private int startY = -1;
+
+    // used for select mode
+    private static final int submode_move = 0;
+    private static final int submode_select = 1;
+
+    private boolean selected = false;
+    private Point selectSt;
+    private Point selectEd;
+    private BufferedImage clip;
+
+    private int select_submode;
+    private Point moveSt;
+    private Point initialSelectSt;
+    private Point initialSelectEd;
 
     private Canvas() {
         super();
@@ -67,8 +91,25 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
                 undo();
             }
         });
+        getActionMap().put("copy", new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                saveToClipBoard();
+            }
+        });
+        getActionMap().put("paste", new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                loadFromClipBoard();
+            }
+        });
+
         getInputMap().put(
                 KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()), "undo");
+
+        getInputMap().put(
+                KeyStroke.getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()), "copy");
+
+        getInputMap().put(
+                KeyStroke.getKeyStroke(KeyEvent.VK_V, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()), "paste");
     }
 
     public Canvas(DrawingPanel panel) {
@@ -121,11 +162,85 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
         repaint();
     }
 
+    private void drawSelectedArea(int curX, int curY, boolean drawClip) {
+        mainCanvas = MyUtils.deepCopy(savedCanvas);
+        Graphics g = mainCanvas.getGraphics();
+        if (drawClip)
+            g.drawImage(clip, selectSt.x, selectSt.y, null);
+        g.setColor(Color.gray);
+        Stroke dashed = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL,
+                0, new float[] { 9 }, 0);
+        ShapeDrawer.drawRectangle(selectSt.x, selectSt.y, curX, curY, g, dashed);
+
+        repaint();
+    }
+
+    private void moveSelectedArea(int curX, int curY) {
+        mainCanvas = MyUtils.deepCopy(savedCanvas);
+        Graphics g = mainCanvas.getGraphics();
+        Point offset = new Point(curX - moveSt.x, curY - moveSt.y);
+
+        // clear initial area
+        if (initialSelectSt != null) {
+            g.setColor(backgroundColor);
+            FormattedPoints formatted = new FormattedPoints(initialSelectSt.x, initialSelectSt.y, initialSelectEd.x,
+                    initialSelectEd.y);
+            g.fillRect(formatted.topLeft.x, formatted.topLeft.y, formatted.getWidth(), formatted.getHeight());
+        }
+
+        // draw moved area
+        g.drawImage(clip, selectSt.x + offset.x, selectSt.y + offset.y, null);
+
+        // draw border
+        g.setColor(Color.gray);
+        Stroke dashed = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL,
+                0, new float[] { 9 }, 0);
+        ShapeDrawer.drawRectangle(selectSt.x + offset.x, selectSt.y + offset.y, selectEd.x + offset.x,
+                selectEd.y + offset.y, g, dashed);
+
+        repaint();
+    }
+
+    private void applySelectedArea() {
+        mainCanvas = MyUtils.deepCopy(savedCanvas);
+        Graphics g = mainCanvas.getGraphics();
+        if (initialSelectSt != null) {
+            g.setColor(backgroundColor);
+            FormattedPoints formatted = new FormattedPoints(initialSelectSt.x, initialSelectSt.y, initialSelectEd.x,
+                    initialSelectEd.y);
+            g.fillRect(formatted.topLeft.x, formatted.topLeft.y, formatted.getWidth(), formatted.getHeight());
+        }
+        g.drawImage(clip, selectSt.x, selectSt.y, null);
+        savedCanvas = null;
+        repaint();
+    }
+
     private void autoFill(int x, int y, Graphics g) {
         if (prevX == -1 || prevY == -1)
             return;
 
         ShapeDrawer.drawLine(x, y, prevX, prevY, size, g);
+    }
+
+    private void saveToClipBoard() {
+        if (!selected)
+            return;
+        new CopyImagetoClipBoard().copyImage(clip);
+    }
+
+    public void loadFromClipBoard() {
+        BufferedImage img = CopyImagetoClipBoard.pasteImageFromClipboard();
+        if (img == null)
+            return;
+
+        setMode(Canvas.mode_select);
+        clip = img;
+        selectSt = new Point(0, 0);
+        selectEd = new Point(img.getWidth(), img.getHeight());
+        selected = true;
+        initialSelectSt = null;
+        initialSelectEd = null;
+        drawSelectedArea(img.getWidth(), img.getHeight(), true);
     }
 
     public void saveAsImage(String path) {
@@ -157,6 +272,14 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
         repaint();
     }
 
+    public void setMode(int mode, String... args) {
+        this.mode = mode;
+        if (mode == Canvas.mode_shape) {
+            shape = args[0];
+        }
+    }
+
+    // mouse events
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -177,6 +300,11 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
                 drawShape(e.getX(), e.getY(), mainColor);
         } else if (mode == Canvas.mode_erase) {
             penDraw(e.getX(), e.getY(), "#" + Integer.toHexString(backgroundColor.getRGB()).substring(2));
+        } else if (mode == Canvas.mode_select) {
+            if (select_submode == Canvas.submode_select)
+                drawSelectedArea(e.getX(), e.getY(), false);
+            else if (select_submode == Canvas.submode_move)
+                moveSelectedArea(e.getX(), e.getY());
         }
     }
 
@@ -214,6 +342,23 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
                 fillColor(e.getX(), e.getY(), secondaryColor);
             else
                 fillColor(e.getX(), e.getY(), mainColor);
+        } else if (mode == Canvas.mode_select) {
+            if (selected) {
+                FormattedPoints formatted = new FormattedPoints(selectSt.x, selectSt.y, selectEd.x, selectEd.y);
+                if (formatted.inside(e.getX(), e.getY())) {
+                    select_submode = Canvas.submode_move;
+                    moveSt = new Point(e.getX(), e.getY());
+                    return;
+                }
+                undoer.record(savedCanvas);
+                applySelectedArea();
+            }
+            select_submode = Canvas.submode_select;
+            selectSt = new Point(e.getX(), e.getY());
+            initialSelectSt = new Point(e.getX(), e.getY());
+            selected = false;
+            if (savedCanvas == null)
+                savedCanvas = MyUtils.deepCopy(mainCanvas);
         }
     }
 
@@ -226,6 +371,21 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
             savedCanvas = null;
         } else if (mode == Canvas.mode_pick) {
             pickColor(e.getX(), e.getY(), SwingUtilities.isLeftMouseButton(e));
+        } else if (mode == Canvas.mode_select) {
+            if (select_submode == Canvas.submode_select) {
+                selectEd = new Point(e.getX(), e.getY());
+                initialSelectEd = new Point(selectEd.x, selectEd.y);
+                FormattedPoints formatted = new FormattedPoints(selectSt.x, selectSt.y, selectEd.x, selectEd.y);
+                if (formatted.getWidth() == 0 || formatted.getHeight() == 0)
+                    return;
+                clip = savedCanvas.getSubimage(formatted.topLeft.x, formatted.topLeft.y, formatted.getWidth(),
+                        formatted.getHeight());
+                selected = true;
+            } else if (select_submode == Canvas.submode_move) {
+                Point offset = new Point(e.getX() - moveSt.x, e.getY() - moveSt.y);
+                selectSt = new Point(selectSt.x + offset.x, selectSt.y + offset.y);
+                selectEd = new Point(selectEd.x + offset.x, selectEd.y + offset.y);
+            }
         }
     }
 
@@ -238,13 +398,6 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
         if (mode == Canvas.mode_pen) {
             prevX = -1;
             prevY = -1;
-        }
-    }
-
-    public void setMode(int mode, String... args) {
-        this.mode = mode;
-        if (mode == Canvas.mode_shape) {
-            shape = args[0];
         }
     }
 }

@@ -4,7 +4,7 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 
 public class ShapeDrawer {
-    private static class FormattedPoints {
+    public static class FormattedPoints {
         public Point topLeft;
         public Point bottomRight;
 
@@ -19,6 +19,10 @@ public class ShapeDrawer {
 
         public int getHeight() {
             return bottomRight.y - topLeft.y;
+        }
+
+        public boolean inside(int x, int y) {
+            return (x >= topLeft.x && x <= bottomRight.x) && (y >= topLeft.y && y <= bottomRight.y);
         }
     }
 
@@ -59,6 +63,17 @@ public class ShapeDrawer {
         Graphics2D g2d = (Graphics2D) g;
         Stroke oldStroke = g2d.getStroke();
         g2d.setStroke(new BasicStroke(size));
+        g2d.drawRect(formattedPoints.topLeft.x, formattedPoints.topLeft.y, formattedPoints.getWidth(),
+                formattedPoints.getHeight());
+        g2d.setStroke(oldStroke);
+    }
+
+    public static void drawRectangle(int x1, int y1, int x2, int y2, Graphics g, Stroke stroke) {
+        FormattedPoints formattedPoints = new FormattedPoints(x1, y1, x2, y2);
+
+        Graphics2D g2d = (Graphics2D) g;
+        Stroke oldStroke = g2d.getStroke();
+        g2d.setStroke(stroke);
         g2d.drawRect(formattedPoints.topLeft.x, formattedPoints.topLeft.y, formattedPoints.getWidth(),
                 formattedPoints.getHeight());
         g2d.setStroke(oldStroke);
