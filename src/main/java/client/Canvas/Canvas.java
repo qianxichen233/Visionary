@@ -145,17 +145,16 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
     }
 
     public void pickColor(int x, int y, boolean isMainColor) {
-        int clr = mainCanvas.getRGB(x, y);
-        int blue = clr & 0xff;
-        int green = (clr & 0xff00) >> 8;
-        int red = (clr & 0xff0000) >> 16;
-        String color = "#" + String.format("%02X", red)
-                + String.format("%02X", green)
-                + String.format("%02X", blue);
+        String color = ColorFiller.convertRGBHex(mainCanvas.getRGB(x, y));
         if (isMainColor)
             panel.toolbar.onMainColorChange(color);
         else
             panel.toolbar.onSecondaryColorChange(color);
+    }
+
+    public void fillColor(int x, int y, String color) {
+        new ColorFiller(x, y, mainCanvas, color);
+        repaint();
     }
 
     @Override
@@ -201,12 +200,20 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
     public void mousePressed(MouseEvent e) {
         if (mode == Canvas.mode_pen) {
             undoer.record(mainCanvas);
-        }
-        if (mode == Canvas.mode_shape) {
+        } else if (mode == Canvas.mode_shape) {
+            undoer.record(mainCanvas);
             startX = e.getX();
             startY = e.getY();
             savedCanvas = MyUtils.deepCopy(mainCanvas);
+        } else if (mode == Canvas.mode_erase) {
             undoer.record(mainCanvas);
+            penDraw(e.getX(), e.getY(), "#" + Integer.toHexString(backgroundColor.getRGB()).substring(2));
+        } else if (mode == Canvas.mode_fill) {
+            undoer.record(mainCanvas);
+            if (SwingUtilities.isRightMouseButton(e))
+                fillColor(e.getX(), e.getY(), secondaryColor);
+            else
+                fillColor(e.getX(), e.getY(), mainColor);
         }
     }
 
