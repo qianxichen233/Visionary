@@ -14,6 +14,7 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
     private static final int width = 800;
     private static final int height = 700;
     private static final int padding = 30;
+    public static final Color backgroundColor = Color.WHITE;
     public static final String defaultMainColor = "#000000";
     public static final String defaultSecondaryColor = "#FFFFFF";
     public static final int defaultSize = 5;
@@ -51,7 +52,7 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
         addMouseMotionListener(this);
         setBounds(padding, padding, width - 3 * padding, height - 3 * padding);
         setLayout(null);
-        setBackground(Color.white);
+        setBackground(backgroundColor);
         setFocusable(true);
         addMouseListener(new MouseAdapter() {
             @Override
@@ -77,7 +78,7 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
                 getWidth(), getHeight(),
                 BufferedImage.TYPE_INT_ARGB);
         Graphics2D ig2 = mainCanvas.createGraphics();
-        ig2.setBackground(Color.WHITE);
+        ig2.setBackground(backgroundColor);
         ig2.clearRect(0, 0, getWidth(), getHeight());
     }
 
@@ -175,6 +176,8 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
                 drawShape(e.getX(), e.getY(), secondaryColor);
             else
                 drawShape(e.getX(), e.getY(), mainColor);
+        } else if (mode == Canvas.mode_erase) {
+            penDraw(e.getX(), e.getY(), "#" + Integer.toHexString(backgroundColor.getRGB()).substring(2));
         }
     }
 
