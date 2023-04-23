@@ -1,12 +1,10 @@
 package client.Panel;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.net.Socket;
 import java.util.Scanner;
 import java.io.*;
 
-import javax.swing.*;
 import javax.imageio.ImageIO;
 
 import client.ClientInstance;
@@ -19,6 +17,9 @@ public class DrawingPanel extends MyPanel {
     private int ID;
 
     private boolean newDrawing;
+
+    public Canvas canvas;
+    public Toolbar toolbar;
 
     public DrawingPanel(ClientInstance client, Socket sock, String filename, BufferedImage bufferedImage, int ID) {
         super(client);
@@ -46,8 +47,8 @@ public class DrawingPanel extends MyPanel {
     }
 
     private void initWithImage(BufferedImage image) {
-        Canvas canvas = new Canvas(this, image);
-        Toolbar toolbar = new Toolbar(canvas, this);
+        canvas = new Canvas(this, image);
+        toolbar = new Toolbar(this);
         jf.add(canvas);
         jf.add(toolbar);
 
@@ -57,8 +58,8 @@ public class DrawingPanel extends MyPanel {
     }
 
     private void initWithoutImage() {
-        Canvas canvas = new Canvas(this);
-        Toolbar toolbar = new Toolbar(canvas, this);
+        canvas = new Canvas(this);
+        toolbar = new Toolbar(this);
         jf.add(canvas);
         jf.add(toolbar);
 

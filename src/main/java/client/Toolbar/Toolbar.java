@@ -12,7 +12,6 @@ public class Toolbar extends JPanel {
     private static final int height = 700;
     private static final int padding = 30;
 
-    private Canvas canvas;
     private DrawingPanel panel;
     private int mode = Canvas.mode_pen;
 
@@ -23,81 +22,87 @@ public class Toolbar extends JPanel {
     private ColorPanel colorPanel;
     private SizePanel sizePanel;
     private SaveButton saveButton;
-    // private LoadButton loadButton;
     private SaveRemoteButton saveRemoteButton;
     private ReturnButton returnButton;
     private FilenamePanel filenamePanel;
-    private PenButton penButton;
+    private PenModePanel penModePanel;
     private ShapePanel shapePanel;
 
-    public Toolbar(Canvas canvas, DrawingPanel panel) {
+    public Toolbar(DrawingPanel panel) {
         super();
         this.panel = panel;
-
-        this.canvas = canvas;
 
         setBounds(padding + 800, padding, width - 3 * padding, height - 3 * padding);
         setLayout(null);
         setBackground(Color.white);
 
         int currentHeight = 0;
+
+        // color panel
         colorPanel = new ColorPanel(this, currentHeight);
         currentHeight += ColorPanel.getCHeight();
+
+        // size panel
         sizePanel = new SizePanel(this, currentHeight);
         currentHeight += SizePanel.getCHeight();
-        penButton = new PenButton(this, "Pen", currentHeight);
-        currentHeight += PenButton.height;
+
+        // pen mode button
+        penModePanel = new PenModePanel(this, currentHeight);
+        currentHeight += PenModePanel.getCHeight();
+
+        // shape panel
         shapePanel = new ShapePanel(this, currentHeight);
         currentHeight += ShapePanel.getCHeight();
+
+        // save button
         saveButton = new SaveButton(this, "Save", currentHeight);
         currentHeight += SaveButton.height;
-        // loadButton = new LoadButton(this, "Load", currentHeight);
-        // currentHeight += LoadButton.height;
+
+        // remote save button
         saveRemoteButton = new SaveRemoteButton(this, "Save Remote", currentHeight);
         currentHeight += SaveRemoteButton.height;
+
+        // return button
         returnButton = new ReturnButton(this, "Back to My Galary", currentHeight);
         currentHeight += ReturnButton.height;
+
+        // filename panel
         filenamePanel = new FilenamePanel(this, currentHeight);
         currentHeight += FilenamePanel.getCHeight();
 
         add(colorPanel);
         add(sizePanel);
-        add(penButton);
+        add(penModePanel);
         add(shapePanel);
         add(saveButton);
-        // add(loadButton);
         add(saveRemoteButton);
         add(returnButton);
         add(filenamePanel);
     }
 
-    void onMainColorChange(String color) {
+    public void onMainColorChange(String color) {
         this.mainColor = color;
-        canvas.setMainColor(this.mainColor);
+        panel.canvas.setMainColor(this.mainColor);
         colorPanel.repaint();
     }
 
-    void onSecondaryColorChange(String color) {
+    public void onSecondaryColorChange(String color) {
         this.secondaryColor = color;
-        canvas.setSecondaryColor(this.secondaryColor);
+        panel.canvas.setSecondaryColor(this.secondaryColor);
         colorPanel.repaint();
     }
 
-    void onSizeChange(int size) {
+    public void onSizeChange(int size) {
         this.size = size;
-        canvas.setSize(this.size);
+        panel.canvas.setSize(this.size);
     }
 
     public void onSaveLocal(String path) {
-        canvas.saveAsImage(path);
+        panel.canvas.saveAsImage(path);
     }
 
     public void onSaveRemote() {
-        canvas.saveAsImageRemote();
-    }
-
-    public void onLoad(String path) {
-        canvas.loadImage(path);
+        panel.canvas.saveAsImageRemote();
     }
 
     public void onReturn() {
@@ -106,7 +111,14 @@ public class Toolbar extends JPanel {
 
     public void setMode(int mode, String... args) {
         this.mode = mode;
-        canvas.setMode(mode, args);
+        if (this.mode == Canvas.mode_pen) {
+            penModePanel.setFocus(mode);
+            shapePanel.loseFocus();
+        } else if (this.mode == Canvas.mode_shape) {
+            penModePanel.loseFocus();
+            shapePanel.setFocus(args[0]);
+        }
+        panel.canvas.setMode(mode, args);
     }
 
     public void setFilename(String filename) {

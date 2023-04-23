@@ -143,6 +143,20 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
         repaint();
     }
 
+    public void pickColor(int x, int y, boolean isMainColor) {
+        int clr = mainCanvas.getRGB(x, y);
+        int blue = clr & 0xff;
+        int green = (clr & 0xff00) >> 8;
+        int red = (clr & 0xff0000) >> 16;
+        String color = "#" + String.format("%02X", red)
+                + String.format("%02X", green)
+                + String.format("%02X", blue);
+        if (isMainColor)
+            panel.toolbar.onMainColorChange(color);
+        else
+            panel.toolbar.onSecondaryColorChange(color);
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -200,6 +214,8 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
             prevY = -1;
         } else if (mode == Canvas.mode_shape) {
             savedCanvas = null;
+        } else if (mode == Canvas.mode_pick) {
+            pickColor(e.getX(), e.getY(), SwingUtilities.isLeftMouseButton(e));
         }
     }
 
