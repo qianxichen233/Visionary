@@ -2,6 +2,7 @@ package client.Toolbar;
 
 import java.awt.event.*;
 import javax.swing.*;
+import java.awt.*;
 
 import client.Canvas.Canvas;
 
@@ -30,7 +31,7 @@ public class ShapePanel extends JPanel {
 
         int curX = buttonPadding;
 
-        lineOption.setBounds(curX, 0, lineOption.getPreferredSize().width, height);
+        lineOption.setBounds(curX, 5, lineOption.getPreferredSize().width, height);
         lineOption.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -39,7 +40,7 @@ public class ShapePanel extends JPanel {
         });
         curX += lineOption.getPreferredSize().width + buttonPadding;
 
-        rectOption.setBounds(curX, 0, rectOption.getPreferredSize().width, height);
+        rectOption.setBounds(curX, 5, rectOption.getPreferredSize().width, height);
         rectOption.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -48,7 +49,7 @@ public class ShapePanel extends JPanel {
         });
         curX += rectOption.getPreferredSize().width + buttonPadding;
 
-        cirOption.setBounds(curX, 0, cirOption.getPreferredSize().width, height);
+        cirOption.setBounds(curX, 5, cirOption.getPreferredSize().width, height);
         cirOption.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -57,7 +58,7 @@ public class ShapePanel extends JPanel {
         });
         curX += cirOption.getPreferredSize().width + buttonPadding;
 
-        triOption.setBounds(curX, 0, triOption.getPreferredSize().width, height);
+        triOption.setBounds(curX, 5, triOption.getPreferredSize().width, height);
         triOption.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -70,7 +71,8 @@ public class ShapePanel extends JPanel {
         add(cirOption);
         add(triOption);
 
-        setBounds(padding, padding + Hoffset, width, height);
+        // setBounds(padding, padding + Hoffset, width, height);
+        setPreferredSize(new Dimension(width, height));
         setLayout(null);
     }
 

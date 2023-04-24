@@ -25,7 +25,9 @@ public class ChooseColorPanel extends JPanel {
 
         int curX = buttonPadding;
 
-        mainColorChooser.setBounds(curX, 0, mainColorChooser.getPreferredSize().width, height);
+        int gap = 5;
+
+        mainColorChooser.setBounds(curX, gap, mainColorChooser.getPreferredSize().width, height);
         mainColorChooser.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -38,7 +40,7 @@ public class ChooseColorPanel extends JPanel {
         });
         curX += mainColorChooser.getPreferredSize().width + buttonPadding;
 
-        secondaryColorChooser.setBounds(curX, 0, secondaryColorChooser.getPreferredSize().width, height);
+        secondaryColorChooser.setBounds(curX, gap, secondaryColorChooser.getPreferredSize().width, height);
         secondaryColorChooser.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -53,7 +55,8 @@ public class ChooseColorPanel extends JPanel {
         add(mainColorChooser);
         add(secondaryColorChooser);
 
-        setBounds(padding, padding + Hoffset, width, height);
+        // setBounds(padding, padding + Hoffset, width, height);
+        setPreferredSize(new Dimension(width, height));
         setLayout(null);
     }
 

@@ -8,7 +8,7 @@ import java.util.*;
 
 public class ColorPanel extends JPanel {
     private static final int padding = 10;
-    public static final int height = 90;
+    public static final int height = 100;
     private static final int columns = 8;
     private static final int boxSize = 20;
     private static final int displayBoxSize = 30;
@@ -77,11 +77,12 @@ public class ColorPanel extends JPanel {
             ColorList.add(color);
         int width = Toolbar.getActualWidth() - 2 * padding;
         this.toolbar = toolbar;
-        setBounds(padding, padding + Hoffset, width, height);
+        // setBounds(padding, padding + Hoffset, width, height);
+        setPreferredSize(new Dimension(width, height));
         setBackground(Color.white);
 
         int gap = (width - boxSize * columns) / (columns + 1);
-        int curX = gap, curY = 40;
+        int curX = gap, curY = 50;
         for (int i = 0; i < ColorList.size(); ++i) {
             if (i % columns == 0 && i != 0) {
                 curX = gap;
@@ -103,12 +104,12 @@ public class ColorPanel extends JPanel {
         int gap = (width - boxSize * columns) / (columns + 1);
 
         g.setColor(Color.decode(toolbar.mainColor));
-        g.fillRect(gap, 0, displayBoxSize, displayBoxSize);
+        g.fillRect(gap, 10, displayBoxSize, displayBoxSize);
         g.setColor(Color.decode(toolbar.secondaryColor));
-        g.fillRect(width - displayBoxSize - gap, 0, displayBoxSize, displayBoxSize);
+        g.fillRect(width - displayBoxSize - gap, 10, displayBoxSize, displayBoxSize);
         g.setColor(Color.gray); // border color
-        g.drawRect(gap, 0, displayBoxSize, displayBoxSize);
-        g.drawRect(width - displayBoxSize - gap, 0, displayBoxSize, displayBoxSize);
+        g.drawRect(gap, 10, displayBoxSize, displayBoxSize);
+        g.drawRect(width - displayBoxSize - gap, 10, displayBoxSize, displayBoxSize);
     }
 
     static public int getCHeight() {

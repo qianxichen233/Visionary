@@ -9,9 +9,9 @@ import client.Panel.DrawingPanel;
 import client.Toolbar.Buttons.*;
 
 public class Toolbar extends JPanel {
-    private static final int width = 450;
-    private static final int height = 700;
-    private static final int padding = 30;
+    public static final int width = 450;
+    public static final int height = 700;
+    public static final int padding = 30;
 
     private DrawingPanel panel;
     private int mode = Canvas.mode_pen;
@@ -33,9 +33,8 @@ public class Toolbar extends JPanel {
     public Toolbar(DrawingPanel panel) {
         super();
         this.panel = panel;
-
-        setBounds(padding + 800, padding, width - 3 * padding, height - 3 * padding);
-        setLayout(null);
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        // setBounds(padding + 800, padding, width - 3 * padding, height - 3 * padding);
         setBackground(Color.white);
 
         int currentHeight = 0;
@@ -71,6 +70,10 @@ public class Toolbar extends JPanel {
         penModePanel = new PenModePanel(this, currentHeight);
         currentHeight += PenModePanel.getCHeight();
         add(penModePanel);
+
+        // shape mode
+        add(new TextPanel(this, "Shapes", currentHeight));
+        currentHeight += TextPanel.getCHeight();
 
         // shape panel
         shapePanel = new ShapePanel(this, currentHeight);

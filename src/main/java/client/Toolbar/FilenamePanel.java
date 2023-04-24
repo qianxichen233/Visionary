@@ -3,6 +3,7 @@ package client.Toolbar;
 import java.awt.Insets;
 import java.awt.event.*;
 import javax.swing.*;
+import java.awt.*;
 
 public class FilenamePanel extends JPanel {
     private static final int padding = 10;
@@ -17,13 +18,13 @@ public class FilenamePanel extends JPanel {
         this.toolbar = toolbar;
         int width = Toolbar.getActualWidth() - 2 * padding;
         JLabel text = new JLabel("Filename: ");
-        text.setBounds(30, 0, 100, height);
+        text.setBounds(30, 5, 100, height);
 
         filenameField = new JTextArea();
         filenameField.setText(toolbar.getFilename());
         filenameField.setMargin(new Insets(textPadding, textPadding, textPadding, textPadding));
         int filenameFieldHeight = filenameField.getPreferredSize().height;
-        filenameField.setBounds(100, (height - filenameFieldHeight) / 2, 200, filenameFieldHeight);
+        filenameField.setBounds(100, 10, 200, filenameFieldHeight);
 
         filenameField.addKeyListener(new KeyListener() {
             @Override
@@ -44,7 +45,8 @@ public class FilenamePanel extends JPanel {
 
         this.add(text);
         this.add(filenameField);
-        setBounds(padding, padding + Hoffset, width, height);
+        // setBounds(padding, padding + Hoffset, width, height);
+        setPreferredSize(new Dimension(width, height));
         setLayout(null);
     }
 

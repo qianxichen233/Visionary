@@ -2,6 +2,7 @@ package client.Toolbar;
 
 import java.awt.event.*;
 import javax.swing.*;
+import java.awt.*;
 
 import client.Canvas.Canvas;
 
@@ -9,7 +10,8 @@ public class PenModePanel extends JPanel {
     private static final int padding = 10;
     private static final int height = 30;
 
-    private static final int options = 4;
+    private static final int column = 4;
+    private static final int row = 2;
 
     Toolbar toolbar;
 
@@ -22,15 +24,16 @@ public class PenModePanel extends JPanel {
         JButton pickerOption = new JButton("Picker");
         JButton eraserOption = new JButton("Eraser");
         JButton fillOption = new JButton("Fill");
+        JButton selectOption = new JButton("Select");
 
         int buttonPadding = (width - penOption.getPreferredSize().width
                 - pickerOption.getPreferredSize().width
                 - eraserOption.getPreferredSize().width
-                - fillOption.getPreferredSize().width) / (options + 1);
+                - fillOption.getPreferredSize().width) / (column + 1);
 
         int curX = buttonPadding;
 
-        penOption.setBounds(curX, 0, penOption.getPreferredSize().width, height);
+        penOption.setBounds(curX, 5, penOption.getPreferredSize().width, height);
         penOption.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -39,7 +42,7 @@ public class PenModePanel extends JPanel {
         });
         curX += penOption.getPreferredSize().width + buttonPadding;
 
-        pickerOption.setBounds(curX, 0, pickerOption.getPreferredSize().width, height);
+        pickerOption.setBounds(curX, 5, pickerOption.getPreferredSize().width, height);
         pickerOption.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -48,7 +51,7 @@ public class PenModePanel extends JPanel {
         });
         curX += pickerOption.getPreferredSize().width + buttonPadding;
 
-        eraserOption.setBounds(curX, 0, eraserOption.getPreferredSize().width, height);
+        eraserOption.setBounds(curX, 5, eraserOption.getPreferredSize().width, height);
         eraserOption.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -57,21 +60,31 @@ public class PenModePanel extends JPanel {
         });
         curX += eraserOption.getPreferredSize().width + buttonPadding;
 
-        fillOption.setBounds(curX, 0, fillOption.getPreferredSize().width, height);
+        fillOption.setBounds(curX, 5, fillOption.getPreferredSize().width, height);
         fillOption.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 PenModePanel.this.toolbar.setMode(Canvas.mode_fill);
             }
         });
-        curX += fillOption.getPreferredSize().width + buttonPadding;
+        curX = buttonPadding;
+
+        selectOption.setBounds(curX, height + 5, selectOption.getPreferredSize().width, height);
+        selectOption.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                PenModePanel.this.toolbar.setMode(Canvas.mode_select);
+            }
+        });
 
         add(penOption);
         add(pickerOption);
         add(eraserOption);
         add(fillOption);
+        add(selectOption);
 
-        setBounds(padding, padding + Hoffset, width, height);
+        // setBounds(padding, padding + Hoffset, width, height);
+        setPreferredSize(new Dimension(width, height * row));
         setLayout(null);
     }
 
@@ -82,6 +95,6 @@ public class PenModePanel extends JPanel {
     }
 
     public static int getCHeight() {
-        return height + padding;
+        return height * row + padding;
     }
 }

@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.net.Socket;
 import java.util.Scanner;
 import java.io.*;
+import javax.swing.*;
 
 import javax.imageio.ImageIO;
 
@@ -49,8 +50,11 @@ public class DrawingPanel extends MyPanel {
     private void initWithImage(BufferedImage image) {
         canvas = new Canvas(this, image);
         toolbar = new Toolbar(this);
+        JScrollPane scroller = new JScrollPane(toolbar);
+        scroller.setBounds(Toolbar.padding + 800, Toolbar.padding, Toolbar.width - 3 * Toolbar.padding,
+                Toolbar.height - 3 * Toolbar.padding);
         jf.add(canvas);
-        jf.add(toolbar);
+        jf.add(scroller);
 
         jf.setLayout(null);
         jf.getContentPane().repaint();
@@ -60,8 +64,11 @@ public class DrawingPanel extends MyPanel {
     private void initWithoutImage() {
         canvas = new Canvas(this);
         toolbar = new Toolbar(this);
+        JScrollPane scroller = new JScrollPane(toolbar);
+        scroller.setBounds(Toolbar.padding + 800, Toolbar.padding, Toolbar.width - 3 * Toolbar.padding,
+                Toolbar.height - 3 * Toolbar.padding);
         jf.add(canvas);
-        jf.add(toolbar);
+        jf.add(scroller);
 
         jf.setLayout(null);
         jf.getContentPane().repaint();

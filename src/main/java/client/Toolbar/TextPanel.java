@@ -3,10 +3,11 @@ package client.Toolbar;
 import java.awt.Color;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class TextPanel extends JPanel {
     private static final int padding = 10;
-    private static final int height = 30;
+    private static final int height = 20;
 
     Toolbar toolbar;
 
@@ -20,7 +21,8 @@ public class TextPanel extends JPanel {
 
         add(textLabel);
 
-        setBounds(padding, padding + Hoffset, width, height);
+        // setBounds(padding, padding + Hoffset, width, height);
+        setPreferredSize(new Dimension(width, height));
         setBackground(Color.decode("#394e5e"));
     }
 

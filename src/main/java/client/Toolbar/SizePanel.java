@@ -4,6 +4,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.text.*;
 import java.text.*;
+import java.awt.*;
 
 public class SizePanel extends JPanel {
     private static final int padding = 10;
@@ -19,9 +20,9 @@ public class SizePanel extends JPanel {
         this.toolbar = toolbar;
         int width = Toolbar.getActualWidth() - 2 * padding;
         JLabel text = new JLabel("Size: ");
-        text.setBounds(30, 0, 100, height);
+        text.setBounds(30, 5, 100, height);
         JButton minus = new JButton("-");
-        minus.setBounds(100, 0, 50, height);
+        minus.setBounds(100, 5, 50, height);
         minus.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -29,7 +30,7 @@ public class SizePanel extends JPanel {
             }
         });
         JButton add = new JButton("+");
-        add.setBounds(200, 0, 50, height);
+        add.setBounds(200, 5, 50, height);
         add.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -46,7 +47,7 @@ public class SizePanel extends JPanel {
         formatter.setCommitsOnValidEdit(true);
         sizeField = new JFormattedTextField(formatter);
         sizeField.setText(toolbar.size + "");
-        sizeField.setBounds(150, 0, 50, height);
+        sizeField.setBounds(150, 5, 50, height);
         sizeField.addKeyListener(new KeyListener() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -68,7 +69,8 @@ public class SizePanel extends JPanel {
         this.add(minus);
         this.add(sizeField);
         this.add(add);
-        setBounds(padding, padding + Hoffset, width, height);
+        // setBounds(padding, padding + Hoffset, width, height);
+        setPreferredSize(new Dimension(width, height));
         setLayout(null);
     }
 
