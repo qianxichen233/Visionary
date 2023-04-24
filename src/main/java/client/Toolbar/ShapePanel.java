@@ -23,6 +23,10 @@ public class ShapePanel extends JPanel {
         JButton rectOption = new JButton("Rect");
         JButton cirOption = new JButton("Circle");
         JButton triOption = new JButton("Triangle");
+        lineOption.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        rectOption.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        cirOption.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        triOption.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         int buttonPadding = (width - lineOption.getPreferredSize().width
                 - rectOption.getPreferredSize().width

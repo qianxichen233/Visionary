@@ -19,6 +19,8 @@ public class ChooseColorPanel extends JPanel {
 
         JButton mainColorChooser = new JButton("Main Color");
         JButton secondaryColorChooser = new JButton("Secondary Color");
+        mainColorChooser.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        secondaryColorChooser.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         int buttonPadding = (width - mainColorChooser.getPreferredSize().width
                 - secondaryColorChooser.getPreferredSize().width) / (options + 1);

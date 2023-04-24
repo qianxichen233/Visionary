@@ -1,9 +1,6 @@
-1. delete drawing feature
-2. image preview on gallary page
-3. image encryption before sending to the server ?
-4. add scroll bar to canvas toolbar
-5. add different brushes ?
-6. add more shapes
-7. change from stateful connection to stateless connection with session based authentication
-8. resize clip on select mode ?
-9. add cursor icon
+1. image preview on gallary page
+2. image encryption before sending to the server ?
+3. add different brushes ?
+4. change from stateful connection to stateless connection with session based authentication
+5. resize clip on select mode ?
+6. add cursor icon

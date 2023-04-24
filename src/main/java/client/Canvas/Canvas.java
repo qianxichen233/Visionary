@@ -340,6 +340,17 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 
     @Override
     public void mouseMoved(MouseEvent e) {
+        if (mode == Canvas.mode_select) {
+            if (selected) {
+                FormattedPoints formatted = new FormattedPoints(selectSt.x, selectSt.y, selectEd.x, selectEd.y);
+                if (formatted.inside(e.getX(), e.getY()))
+                    setCursor(new Cursor(Cursor.E_RESIZE_CURSOR));
+                else
+                    setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+            } else
+                setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+        } else
+            setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
     }
 
     @Override

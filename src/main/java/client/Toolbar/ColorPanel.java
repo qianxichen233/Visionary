@@ -44,6 +44,7 @@ public class ColorPanel extends JPanel {
             addMouseListener(this);
             Border blackline = BorderFactory.createLineBorder(Color.gray);
             setBorder(blackline);
+            setCursor(new Cursor(Cursor.HAND_CURSOR));
         }
 
         @Override

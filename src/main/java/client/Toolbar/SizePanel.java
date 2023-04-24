@@ -22,6 +22,7 @@ public class SizePanel extends JPanel {
         JLabel text = new JLabel("Size: ");
         text.setBounds(30, 5, 100, height);
         JButton minus = new JButton("-");
+        minus.setCursor(new Cursor(Cursor.HAND_CURSOR));
         minus.setBounds(100, 5, 50, height);
         minus.addActionListener(new ActionListener() {
             @Override
@@ -30,6 +31,7 @@ public class SizePanel extends JPanel {
             }
         });
         JButton add = new JButton("+");
+        add.setCursor(new Cursor(Cursor.HAND_CURSOR));
         add.setBounds(200, 5, 50, height);
         add.addActionListener(new ActionListener() {
             @Override

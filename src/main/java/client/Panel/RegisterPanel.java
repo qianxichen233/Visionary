@@ -131,6 +131,7 @@ class RegisterForm extends JPanel {
 
         JPanel buttonPanel = new JPanel(new GridBagLayout());
         JButton button = new JButton("Register");
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -156,6 +157,7 @@ class RegisterForm extends JPanel {
 
         JPanel switchPanel = new JPanel(new GridBagLayout());
         JButton switchButton = new JButton("Already Have Account? Login!");
+        switchButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
         switchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

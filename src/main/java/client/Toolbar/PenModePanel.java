@@ -25,6 +25,11 @@ public class PenModePanel extends JPanel {
         JButton eraserOption = new JButton("Eraser");
         JButton fillOption = new JButton("Fill");
         JButton selectOption = new JButton("Select");
+        penOption.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        pickerOption.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        eraserOption.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        fillOption.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        selectOption.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         int buttonPadding = (width - penOption.getPreferredSize().width
                 - pickerOption.getPreferredSize().width

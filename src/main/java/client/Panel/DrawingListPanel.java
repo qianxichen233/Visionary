@@ -31,7 +31,8 @@ public class DrawingListPanel extends MyPanel {
         header.setBounds(0, 0, jf.getWidth(), 50);
 
         drawingList = new DrawingList(this);
-        JScrollPane scroller = new JScrollPane(drawingList);
+        JScrollPane scroller = new JScrollPane(drawingList, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scroller.setBorder(null);
         drawingList.scroller = scroller;
         scroller.setBounds(0, 50, jf.getWidth(), jf.getHeight() - 50);
@@ -185,6 +186,7 @@ class Header extends JPanel {
 
         JPanel logoutPanel = new JPanel(new GridBagLayout());
         JButton logoutButton = new JButton("Log out");
+        logoutButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
         logoutButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -403,6 +405,7 @@ class DrawingItem extends JPanel {
             }
         });
         add(deleteButton);
+        setCursor(new Cursor(Cursor.HAND_CURSOR));
     }
 
     public DrawingItem(DrawingList listPanel, String type) {

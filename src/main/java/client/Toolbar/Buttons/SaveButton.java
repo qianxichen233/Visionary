@@ -18,6 +18,7 @@ public class SaveButton extends JPanel {
 
         JButton button = new JButton(title);
         button.setText(title);
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
         // setBounds(0, Hoffset, Toolbar.getActualWidth(), height);
         setPreferredSize(new Dimension(Toolbar.getActualWidth() - 2 * padding, height));
         button.addActionListener(new ActionListener() {
