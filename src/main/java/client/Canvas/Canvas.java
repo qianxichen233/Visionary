@@ -7,6 +7,7 @@ import javax.swing.*;
 
 import client.Canvas.ShapeDrawer.FormattedPoints;
 import client.Panel.DrawingPanel;
+import client.Canvas.Undoer.Record;
 import client.utils.*;
 
 import java.awt.image.BufferedImage;
@@ -253,10 +254,11 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
     }
 
     public void undo() {
-        BufferedImage previous = undoer.undo();
+        Record previous = undoer.undo();
         if (previous == null)
             return;
-        mainCanvas = previous;
+        mainCanvas = previous.mainCanvas;
+        savedCanvas = previous.savedCanvas;
         repaint();
     }
 
@@ -328,17 +330,17 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
     @Override
     public void mousePressed(MouseEvent e) {
         if (mode == Canvas.mode_pen) {
-            undoer.record(mainCanvas);
+            undoer.record(mainCanvas, savedCanvas);
         } else if (mode == Canvas.mode_shape) {
-            undoer.record(mainCanvas);
+            undoer.record(mainCanvas, savedCanvas);
             startX = e.getX();
             startY = e.getY();
             savedCanvas = MyUtils.deepCopy(mainCanvas);
         } else if (mode == Canvas.mode_erase) {
-            undoer.record(mainCanvas);
+            undoer.record(mainCanvas, savedCanvas);
             penDraw(e.getX(), e.getY(), "#" + Integer.toHexString(backgroundColor.getRGB()).substring(2));
         } else if (mode == Canvas.mode_fill) {
-            undoer.record(mainCanvas);
+            undoer.record(mainCanvas, savedCanvas);
             if (SwingUtilities.isRightMouseButton(e))
                 fillColor(e.getX(), e.getY(), secondaryColor);
             else
@@ -351,7 +353,7 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
                     moveSt = new Point(e.getX(), e.getY());
                     return;
                 }
-                undoer.record(savedCanvas);
+                undoer.record(savedCanvas, savedCanvas);
                 applySelectedArea();
             }
             select_submode = Canvas.submode_select;
