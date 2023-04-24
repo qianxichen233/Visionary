@@ -294,6 +294,15 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
     }
 
     public void setMode(int mode, String... args) {
+        if (this.mode == Canvas.mode_select) {
+            if (selected) {
+                undoer.record(savedCanvas, savedCanvas);
+                applySelectedArea();
+            } else {
+                mainCanvas = savedCanvas;
+                repaint();
+            }
+        }
         this.mode = mode;
         if (mode == Canvas.mode_shape) {
             shape = args[0];
