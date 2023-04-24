@@ -9,7 +9,7 @@ public class ShapePanel extends JPanel {
     private static final int padding = 10;
     private static final int height = 30;
 
-    private static final int options = 3;
+    private static final int options = 4;
 
     Toolbar toolbar;
 
@@ -21,10 +21,12 @@ public class ShapePanel extends JPanel {
         JButton lineOption = new JButton("Line");
         JButton rectOption = new JButton("Rect");
         JButton cirOption = new JButton("Circle");
+        JButton triOption = new JButton("Triangle");
 
         int buttonPadding = (width - lineOption.getPreferredSize().width
                 - rectOption.getPreferredSize().width
-                - cirOption.getPreferredSize().width) / (options + 1);
+                - cirOption.getPreferredSize().width
+                - triOption.getPreferredSize().width) / (options + 1);
 
         int curX = buttonPadding;
 
@@ -53,10 +55,20 @@ public class ShapePanel extends JPanel {
                 ShapePanel.this.toolbar.setMode(Canvas.mode_shape, "Circle");
             }
         });
+        curX += cirOption.getPreferredSize().width + buttonPadding;
+
+        triOption.setBounds(curX, 0, triOption.getPreferredSize().width, height);
+        triOption.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ShapePanel.this.toolbar.setMode(Canvas.mode_shape, "Triangle");
+            }
+        });
 
         add(lineOption);
         add(rectOption);
         add(cirOption);
+        add(triOption);
 
         setBounds(padding, padding + Hoffset, width, height);
         setLayout(null);

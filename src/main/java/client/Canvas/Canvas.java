@@ -39,7 +39,7 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
     private volatile String mainColor = defaultMainColor;
     private volatile String secondaryColor = defaultSecondaryColor;
     private volatile int size = defaultSize;
-    private volatile int mode = mode_select;
+    private volatile int mode = mode_pen;
 
     // parent panel
     private DrawingPanel panel;
