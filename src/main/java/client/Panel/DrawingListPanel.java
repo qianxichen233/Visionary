@@ -80,6 +80,20 @@ public class DrawingListPanel extends MyPanel {
         client.drawingPage(image, fd.getFile().substring(0, fd.getFile().lastIndexOf('.')));
     }
 
+    public void deleteDrawing(Drawing drawing) {
+        try {
+            PrintStream sout = new PrintStream(sock.getOutputStream());
+            Scanner sin = new Scanner(sock.getInputStream());
+            sout.println("delete");
+            sout.println(drawing.ID);
+            int result = Integer.parseInt(sin.nextLine());
+            if (result == 200)
+                new getDrawings(this).start();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
     public void newDrawing() {
         client.drawingPage();
     }
@@ -301,6 +315,10 @@ class DrawingList extends JPanel {
         panel.clickDrawing(drawing);
     }
 
+    public void onDelete(Drawing drawing) {
+        panel.deleteDrawing(drawing);
+    }
+
     public void openDrawing() {
         panel.openDrawing();
     }
@@ -377,6 +395,14 @@ class DrawingItem extends JPanel {
         this.drawing = drawing;
         this.listPanel = listPanel;
         addMouseListener(new onClickListener(drawing));
+        JButton deleteButton = new JButton("Delete");
+        deleteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                DrawingItem.this.listPanel.onDelete(DrawingItem.this.drawing);
+            }
+        });
+        add(deleteButton);
     }
 
     public DrawingItem(DrawingList listPanel, String type) {
@@ -420,6 +446,7 @@ class getDrawings extends Thread {
         panel.render();
 
         Socket sock = panel.getSocket();
+        panel.drawings.clear();
         try {
             Scanner sin = new Scanner(sock.getInputStream());
             PrintStream sout = new PrintStream(sock.getOutputStream());

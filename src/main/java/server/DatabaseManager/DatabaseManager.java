@@ -191,6 +191,20 @@ public class DatabaseManager {
         return hash;
     }
 
+    public boolean deleteDrawing(int ID) {
+        String sql = "DELETE FROM drawing WHERE ID = ? LIMIT 1";
+
+        try {
+            PreparedStatement s = conn.prepareStatement(sql);
+            s.setInt(1, ID);
+            s.executeQuery();
+        } catch (Exception e) {
+            System.out.println(e);
+            return false;
+        }
+        return true;
+    }
+
     public Connection getConnection() {
         return conn;
     }

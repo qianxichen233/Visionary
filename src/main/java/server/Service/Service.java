@@ -87,6 +87,18 @@ public class Service extends Thread {
                             + ".png";
                     File previousImage = new File(path);
                     previousImage.delete();
+                } else if (operation.equals("delete")) {
+                    int ID = Integer.parseInt(sin.nextLine());
+                    String hash = databaseManager.getDrawingHash(ID);
+                    if (!databaseManager.deleteDrawing(ID)) {
+                        sout.println("500");
+                        continue;
+                    }
+                    String path = System.getProperty("user.dir") + "/userImage/" + username + "/" + hash
+                            + ".png";
+                    File image = new File(path);
+                    image.delete();
+                    sout.println("200");
                 }
             }
 
