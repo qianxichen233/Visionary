@@ -1,0 +1,6 @@
+1. delete drawing feature
+2. image previous on gallary page
+3. image encryption before sending to the server ?
+4. add scroll bar to canvas toolbar
+5. add different brushes ?
+6. add more shapes
