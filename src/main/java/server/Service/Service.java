@@ -42,7 +42,6 @@ public class Service extends Thread {
                     return;
                 }
             } else if (type.equals("register")) {
-                System.out.println("register!");
                 if (!accountHandler.register(username, password)) {
                     sout.println("500");
                     sout.println("Username already exists!");

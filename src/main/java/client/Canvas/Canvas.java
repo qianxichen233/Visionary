@@ -7,7 +7,6 @@ import javax.swing.*;
 
 import client.Canvas.ShapeDrawer.FormattedPoints;
 import client.Panel.DrawingPanel;
-import client.Canvas.Undoer.Record;
 import client.utils.*;
 
 import java.awt.image.BufferedImage;
@@ -112,7 +111,9 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
                 KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()), "undo");
 
         getInputMap().put(
-                KeyStroke.getKeyStroke(KeyEvent.VK_D, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()), "redo");
+                KeyStroke.getKeyStroke(KeyEvent.VK_Z,
+                        Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx() | KeyEvent.SHIFT_DOWN_MASK),
+                "redo");
 
         getInputMap().put(
                 KeyStroke.getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()), "copy");
@@ -262,7 +263,7 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
     }
 
     public void undo() {
-        Record previous = undoer.undo();
+        Undoer.Record previous = undoer.undo(mainCanvas, savedCanvas);
         if (previous == null)
             return;
         mainCanvas = previous.mainCanvas;
@@ -271,7 +272,7 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
     }
 
     public void redo() {
-        Record next = undoer.redo();
+        Undoer.Record next = undoer.redo();
         if (next == null)
             return;
         mainCanvas = next.mainCanvas;

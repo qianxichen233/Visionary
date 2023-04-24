@@ -42,7 +42,8 @@ public class Undoer {
         rhead = head;
     }
 
-    public Record undo() {
+    public Record undo(BufferedImage mainCanvas, BufferedImage savedCanvas) {
+        records[head] = new Record(MyUtils.deepCopy(mainCanvas), MyUtils.deepCopy(savedCanvas));
         if (head == tail)
             return null;
         --head;
