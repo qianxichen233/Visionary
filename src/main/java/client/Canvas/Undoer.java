@@ -8,6 +8,7 @@ public class Undoer {
     public static final int maxUndo = 16;
 
     private Record[] records = new Record[maxUndo];
+    private int rhead;
     private int head;
     private int tail;
 
@@ -22,6 +23,7 @@ public class Undoer {
     }
 
     public Undoer() {
+        rhead = 0;
         head = 0;
         tail = 0;
     }
@@ -36,6 +38,8 @@ public class Undoer {
             if (tail >= maxUndo)
                 tail = 0;
         }
+
+        rhead = head;
     }
 
     public Record undo() {
@@ -44,6 +48,15 @@ public class Undoer {
         --head;
         if (head < 0)
             head += maxUndo;
+        return records[head];
+    }
+
+    public Record redo() {
+        if (rhead == head)
+            return null;
+        ++head;
+        if (head >= maxUndo)
+            head = 0;
         return records[head];
     }
 }

@@ -5,6 +5,8 @@ import java.awt.image.BufferedImage;
 
 public class MyUtils {
     public static BufferedImage deepCopy(BufferedImage bi) {
+        if (bi == null)
+            return null;
         ColorModel cm = bi.getColorModel();
         boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
         WritableRaster raster = bi.copyData(null);

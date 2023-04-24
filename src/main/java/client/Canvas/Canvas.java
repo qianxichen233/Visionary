@@ -92,6 +92,11 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
                 undo();
             }
         });
+        getActionMap().put("redo", new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                redo();
+            }
+        });
         getActionMap().put("copy", new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 saveToClipBoard();
@@ -105,6 +110,9 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 
         getInputMap().put(
                 KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()), "undo");
+
+        getInputMap().put(
+                KeyStroke.getKeyStroke(KeyEvent.VK_D, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()), "redo");
 
         getInputMap().put(
                 KeyStroke.getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()), "copy");
@@ -259,6 +267,15 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
             return;
         mainCanvas = previous.mainCanvas;
         savedCanvas = previous.savedCanvas;
+        repaint();
+    }
+
+    public void redo() {
+        Record next = undoer.redo();
+        if (next == null)
+            return;
+        mainCanvas = next.mainCanvas;
+        savedCanvas = next.savedCanvas;
         repaint();
     }
 
