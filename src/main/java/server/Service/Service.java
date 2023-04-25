@@ -38,6 +38,7 @@ public class Service extends Thread {
                 System.out.println(username);
                 System.out.println(password);
                 String token = accountHandler.login(username, password);
+                System.out.println(token);
                 if (token == null) {
                     sout.println("500");
                     sout.println("Wrong username or password!");
@@ -97,7 +98,6 @@ public class Service extends Thread {
                     Collections.sort(drawings, new Comparator<Drawing>() {
                         @Override
                         public int compare(Drawing lhs, Drawing rhs) {
-                            // -1 - less than, 1 - greater than, 0 - equal, all inversed for descending
                             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                             try {
                                 return dateFormat.parse(rhs.createdAt).compareTo(dateFormat.parse(lhs.createdAt));

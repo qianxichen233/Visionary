@@ -1,6 +1,7 @@
 package server.DatabaseManager;
 
 import java.sql.*;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.io.*;
 import java.util.*;
@@ -205,12 +206,15 @@ public class DatabaseManager {
         return true;
     }
 
-    public boolean addSession(String token, String username) {
-        String sql = "INSERT INTO session VALUES(?, ?)";
+    public boolean addSession(String token, String username, long expiration_days) {
+        String sql = "INSERT INTO session VALUES(?, ?, ?)";
+        long ltime = new Date().getTime() + expiration_days * 24 * 60 * 60 * 1000;
+        String expiration_date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(ltime));
         try {
             PreparedStatement s = conn.prepareStatement(sql);
             s.setString(1, token);
             s.setString(2, username);
+            s.setString(3, expiration_date);
             s.executeQuery();
         } catch (Exception e) {
             return false;
@@ -218,21 +222,50 @@ public class DatabaseManager {
         return true;
     }
 
-    public String getSession(String token) {
+    public String getSessionWithToken(String token) {
         String username = null;
-        String sql = "SELECT username FROM session WHERE token = ? LIMIT 1";
+        String sql = "SELECT username, expiration FROM session WHERE token = ? LIMIT 1";
         try {
             PreparedStatement s = conn.prepareStatement(sql);
             s.setString(1, token);
             s.executeQuery();
             ResultSet rs = s.executeQuery();
-            if (rs.next())
+            if (rs.next()) {
                 username = rs.getString("username");
+                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                if (dateFormat.parse(rs.getString("expiration")).compareTo(new Date()) < 0) {
+                    clearSession(username);
+                    return null;
+                }
+            }
         } catch (Exception e) {
             System.out.println(e);
         }
 
         return username;
+    }
+
+    public String getSessionWithUsername(String username) {
+        String token = null;
+        String sql = "SELECT token, expiration FROM session WHERE username = ? LIMIT 1";
+        try {
+            PreparedStatement s = conn.prepareStatement(sql);
+            s.setString(1, username);
+            s.executeQuery();
+            ResultSet rs = s.executeQuery();
+            if (rs.next()) {
+                token = rs.getString("token");
+                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                if (dateFormat.parse(rs.getString("expiration")).compareTo(new Date()) < 0) {
+                    clearSession(username);
+                    return null;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+
+        return token;
     }
 
     public boolean clearSession(String username) {

@@ -17,6 +17,7 @@ CREATE TABLE drawing (
 CREATE TABLE session (
     token VARCHAR(256),
     username VARCHAR(50) NOT NULL,
+    expiration DATETIME NOT NULL,
     PRIMARY KEY(token),
     FOREIGN KEY(username) REFERENCES user(username)
 );

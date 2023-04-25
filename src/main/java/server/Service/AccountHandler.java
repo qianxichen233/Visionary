@@ -20,7 +20,10 @@ public class AccountHandler {
             return null;
         if (!Password.check(password, pwd).withArgon2())
             return null;
-        return createSession(username);
+        String token = databaseManager.getSessionWithUsername(username);
+        if (token == null)
+            return createSession(username);
+        return token;
     }
 
     public boolean register(String username, String password) {
@@ -29,7 +32,7 @@ public class AccountHandler {
     }
 
     public String getSession(String token) {
-        return databaseManager.getSession(token);
+        return databaseManager.getSessionWithToken(token);
     }
 
     public boolean logout(String username) {
@@ -38,7 +41,7 @@ public class AccountHandler {
 
     private String createSession(String username) {
         String suuid = UUID.randomUUID().toString();
-        if (!databaseManager.addSession(suuid, username))
+        if (!databaseManager.addSession(suuid, username, 30))
             return null;
         return suuid;
     }
