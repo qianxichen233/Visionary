@@ -8,6 +8,7 @@ import java.awt.event.*;
 import java.util.*;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
+import java.text.*;
 
 import client.ClientInstance;
 import client.Modal.Drawing;
@@ -116,7 +117,7 @@ public class DrawingListPanel extends MyPanel {
         return sock;
     }
 
-    private BufferedImage receiveImage(Socket sock) {
+    public static BufferedImage receiveImage(Socket sock) {
         BufferedImage image;
         try {
             InputStream in = sock.getInputStream();
@@ -152,7 +153,7 @@ public class DrawingListPanel extends MyPanel {
         return data;
     }
 
-    private BufferedImage createImageFromBytes(byte[] imageData) {
+    private static BufferedImage createImageFromBytes(byte[] imageData) {
         ByteArrayInputStream bais = new ByteArrayInputStream(imageData);
         try {
             return ImageIO.read(bais);
@@ -397,7 +398,8 @@ class DrawingItem extends JPanel {
         this.drawing = drawing;
         this.listPanel = listPanel;
         addMouseListener(new onClickListener(drawing));
-        JButton deleteButton = new JButton("Delete");
+        JButton deleteButton = new JButton("X");
+        deleteButton.setBounds(0, 0, 20, 20);
         deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -406,6 +408,7 @@ class DrawingItem extends JPanel {
         });
         add(deleteButton);
         setCursor(new Cursor(Cursor.HAND_CURSOR));
+        setLayout(null);
     }
 
     public DrawingItem(DrawingList listPanel, String type) {
@@ -419,11 +422,18 @@ class DrawingItem extends JPanel {
         super.paintComponent(g);
 
         if (drawing != null) {
-            g.setColor(Color.GRAY);
+            if (drawing.thumb != null) {
+                int thumbWidth = drawing.thumb.getWidth();
+                g.drawImage(drawing.thumb, (getWidth() - thumbWidth) / 2, 10, null);
+            }
+            g.setColor(Color.BLACK);
+            Font old = g.getFont();
+            g.setFont(new Font(g.getFont().getName(), Font.BOLD, 18));
             int width = g.getFontMetrics().stringWidth(drawing.filename);
-            g.drawString(drawing.filename, (getWidth() - width) / 2, getHeight() / 3);
+            g.drawString(drawing.filename, (getWidth() - width) / 2, getHeight() - 40);
+            g.setFont(old);
             width = g.getFontMetrics().stringWidth(drawing.createdAt);
-            g.drawString(drawing.createdAt, (getWidth() - width) / 2, 2 * getHeight() / 3);
+            g.drawString(drawing.createdAt, (getWidth() - width) / 2, getHeight() - 10);
         } else if (type == "new") {
             g.setColor(Color.GRAY);
             int width = g.getFontMetrics().stringWidth(newText);
@@ -460,7 +470,9 @@ class getDrawings extends Thread {
                 int ID = Integer.parseInt(sin.nextLine());
                 String filename = sin.nextLine();
                 String createdAt = sin.nextLine();
-                panel.drawings.add(new Drawing(ID, filename, createdAt));
+                BufferedImage thumb = DrawingListPanel.receiveImage(sock);
+                panel.drawings.add(new Drawing(ID, filename, createdAt, thumb));
+                sout.println("200");
             }
         } catch (IOException e) {
             System.out.println(e);

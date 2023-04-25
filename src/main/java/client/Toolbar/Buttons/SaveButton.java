@@ -27,7 +27,7 @@ public class SaveButton extends JPanel {
                 FileDialog fd = new FileDialog(new Frame(), "Save as png file", FileDialog.LOAD);
                 fd.setMode(FileDialog.SAVE);
                 fd.setDirectory(System.getProperty("user.dir") + "/myImages");
-                fd.setFile("Untitled.png");
+                fd.setFile(SaveButton.this.toolbar.getFilename() + ".png");
                 fd.setVisible(true);
                 if (fd.getFile() == null)
                     return;

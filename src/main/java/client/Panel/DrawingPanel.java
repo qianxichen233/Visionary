@@ -11,6 +11,7 @@ import javax.imageio.ImageIO;
 import client.ClientInstance;
 import client.Canvas.Canvas;
 import client.Toolbar.Toolbar;
+import client.utils.MyUtils;
 
 public class DrawingPanel extends MyPanel {
     private Socket sock;
@@ -96,16 +97,8 @@ public class DrawingPanel extends MyPanel {
                 PrintStream sout = new PrintStream(sock.getOutputStream());
                 sout.println("save");
                 sout.println(filename);
-
-                OutputStream out = sock.getOutputStream();
-
-                ByteArrayOutputStream bScrn = new ByteArrayOutputStream();
-                ImageIO.write(image, "png", bScrn);
-                byte imgBytes[] = bScrn.toByteArray();
-                bScrn.close();
-
-                out.write((Integer.toString(imgBytes.length)).getBytes());
-                out.write(imgBytes, 0, imgBytes.length);
+                sendImage(image, sock);
+                sendImage(MyUtils.resize(image, 0.2), sock);
                 ID = Integer.parseInt(sin.nextLine());
                 newDrawing = false;
             } catch (Exception e) {
@@ -118,15 +111,8 @@ public class DrawingPanel extends MyPanel {
                 sout.println(ID);
                 sout.println(filename);
 
-                OutputStream out = sock.getOutputStream();
-
-                ByteArrayOutputStream bScrn = new ByteArrayOutputStream();
-                ImageIO.write(image, "png", bScrn);
-                byte imgBytes[] = bScrn.toByteArray();
-                bScrn.close();
-
-                out.write((Integer.toString(imgBytes.length)).getBytes());
-                out.write(imgBytes, 0, imgBytes.length);
+                sendImage(image, sock);
+                sendImage(MyUtils.resize(image, 0.2), sock);
             } catch (Exception e) {
                 System.out.println(e);
             }
@@ -135,5 +121,17 @@ public class DrawingPanel extends MyPanel {
 
     public void onReturn() {
         client.drawingListPage();
+    }
+
+    private static void sendImage(BufferedImage image, Socket sock) throws IOException {
+        OutputStream out = sock.getOutputStream();
+
+        ByteArrayOutputStream bScrn = new ByteArrayOutputStream();
+        ImageIO.write(image, "png", bScrn);
+        byte imgBytes[] = bScrn.toByteArray();
+        bScrn.close();
+
+        out.write((Integer.toString(imgBytes.length)).getBytes());
+        out.write(imgBytes, 0, imgBytes.length);
     }
 }

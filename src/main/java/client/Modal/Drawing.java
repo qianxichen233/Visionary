@@ -6,7 +6,7 @@ public class Drawing {
     public int ID;
     public String filename;
     public String createdAt;
-    public BufferedImage image;
+    public BufferedImage thumb;
 
     public Drawing(int ID, String filename, String createdAt) {
         this.ID = ID;
@@ -14,10 +14,10 @@ public class Drawing {
         this.createdAt = createdAt;
     }
 
-    public Drawing(int ID, String filename, String createdAt, BufferedImage image) {
+    public Drawing(int ID, String filename, String createdAt, BufferedImage thumb) {
         this.ID = ID;
         this.filename = filename;
         this.createdAt = createdAt;
-        this.image = image;
+        this.thumb = thumb;
     }
 }

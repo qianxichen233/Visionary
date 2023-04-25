@@ -1,6 +1,4 @@
-1. image preview on gallary page
-2. image encryption before sending to the server ?
-3. add different brushes ?
-4. change from stateful connection to stateless connection with session based authentication
-5. resize clip on select mode ?
-6. add cursor icon
+1. image encryption before sending to the server ?
+2. add different brushes ?
+3. change to socket connection with session based authentication
+4. resize clip on select mode ?

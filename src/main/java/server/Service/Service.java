@@ -3,6 +3,7 @@ package server.Service;
 import java.net.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.*;
@@ -62,15 +63,35 @@ public class Service extends Thread {
                 String operation = sin.nextLine();
                 if (operation.equals("save")) {
                     String filename = sin.nextLine();
-                    String hash = receiveImage(sock, System.getProperty("user.dir") + "/userImage/" + username);
+                    String path = System.getProperty("user.dir") + "/userImage/" + username;
+                    String hash = receiveImage(sock, path);
+                    receiveImage(sock, path, hash + ".thumb");
                     sout.println(databaseManager.addDrawing(hash, username, filename));
                 } else if (operation.equals("list")) {
                     ArrayList<Drawing> drawings = databaseManager.getUserDrawings(username);
+                    Collections.sort(drawings, new Comparator<Drawing>() {
+                        @Override
+                        public int compare(Drawing lhs, Drawing rhs) {
+                            // -1 - less than, 1 - greater than, 0 - equal, all inversed for descending
+                            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                            try {
+                                return dateFormat.parse(rhs.createdAt).compareTo(dateFormat.parse(lhs.createdAt));
+                            } catch (Exception e) {
+                                return 0;
+                            }
+                        }
+                    });
                     sout.println(drawings.size());
                     for (Drawing drawing : drawings) {
                         sout.println(drawing.ID);
                         sout.println(drawing.filename);
                         sout.println(drawing.createdAt);
+                        String path = System.getProperty("user.dir") + "/userImage/" + username + "/" + drawing.hash
+                                + ".thumb.png";
+                        sendImage(sock, path);
+                        int result = Integer.parseInt(sin.nextLine());
+                        if (result == 500)
+                            break;
                     }
                 } else if (operation.equals("get")) {
                     int ID = Integer.parseInt(sin.nextLine());
@@ -81,12 +102,17 @@ public class Service extends Thread {
                     int ID = Integer.parseInt(sin.nextLine());
                     String filename = sin.nextLine();
                     String previousHash = databaseManager.getDrawingHash(ID);
-                    String newHash = receiveImage(sock, System.getProperty("user.dir") + "/userImage/" + username);
+                    String path = System.getProperty("user.dir") + "/userImage/" + username;
+                    String newHash = receiveImage(sock, path);
+                    receiveImage(sock, path, newHash + ".thumb");
                     databaseManager.updateDrawing(ID, newHash, filename);
-                    String path = System.getProperty("user.dir") + "/userImage/" + username + "/" + previousHash
-                            + ".png";
-                    File previousImage = new File(path);
+                    if (previousHash.equals(newHash))
+                        continue;
+                    String oldpath = System.getProperty("user.dir") + "/userImage/" + username + "/" + previousHash;
+                    File previousImage = new File(oldpath + ".png");
+                    File previousThumb = new File(oldpath + ".thumb.png");
                     previousImage.delete();
+                    previousThumb.delete();
                 } else if (operation.equals("delete")) {
                     int ID = Integer.parseInt(sin.nextLine());
                     String hash = databaseManager.getDrawingHash(ID);
@@ -94,10 +120,11 @@ public class Service extends Thread {
                         sout.println("500");
                         continue;
                     }
-                    String path = System.getProperty("user.dir") + "/userImage/" + username + "/" + hash
-                            + ".png";
-                    File image = new File(path);
+                    String path = System.getProperty("user.dir") + "/userImage/" + username + "/" + hash;
+                    File image = new File(path + ".png");
+                    File thumb = new File(path + ".thumb.png");
                     image.delete();
+                    thumb.delete();
                     sout.println("200");
                 }
             }
@@ -125,7 +152,8 @@ public class Service extends Thread {
                 Files.createDirectories(Paths.get(path));
                 if (!path.endsWith("/"))
                     path += "/";
-                FileOutputStream f = new FileOutputStream(path + imageHash + ".png");
+                String fullpath = path + imageHash;
+                FileOutputStream f = new FileOutputStream(fullpath + ".png");
                 f.write(imgBytes);
                 f.close();
             }
@@ -134,6 +162,31 @@ public class Service extends Thread {
         }
 
         return imageHash;
+    }
+
+    public void receiveImage(Socket sock, String path, String filename) {
+        try {
+            InputStream in = sock.getInputStream();
+
+            byte[] b = new byte[30];
+            int len = in.read(b);
+
+            int filesize = Integer.parseInt(new String(b).substring(0, len));
+
+            if (filesize > 0) {
+                byte[] imgBytes = readExactly(in, filesize);
+
+                Files.createDirectories(Paths.get(path));
+                if (!path.endsWith("/"))
+                    path += "/";
+                String fullpath = path + filename;
+                FileOutputStream f = new FileOutputStream(fullpath + ".png");
+                f.write(imgBytes);
+                f.close();
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
     }
 
     public void sendImage(Socket sock, String path) {
