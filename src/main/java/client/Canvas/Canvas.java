@@ -55,6 +55,7 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
     private String shape;
     private int startX = -1;
     private int startY = -1;
+    private boolean shiftPressed = false;
 
     // used for select mode
     private static final int submode_move = 0;
@@ -83,6 +84,22 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
             public void mousePressed(MouseEvent e) {
                 // super.mouseReleased(e);
                 Canvas.this.grabFocus();
+            }
+        });
+
+        addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
+                    Canvas.this.shiftPressed = true;
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
+                    Canvas.this.shiftPressed = false;
+                }
             }
         });
 
@@ -167,7 +184,10 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
         mainCanvas = MyUtils.deepCopy(savedCanvas);
         Graphics g = mainCanvas.getGraphics();
         g.setColor(Color.decode(color));
-        ShapeDrawer.drawShape(shape, startX, startY, curX, curY, size, g);
+        if (shiftPressed)
+            ShapeDrawer.drawRightShape(shape, startX, startY, curX, curY, size, g);
+        else
+            ShapeDrawer.drawShape(shape, startX, startY, curX, curY, size, g);
 
         repaint();
     }

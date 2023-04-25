@@ -4,6 +4,8 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 
 public class ShapeDrawer {
+    public static double[] alignedAngles = { 0, 45, 90, 135, 180, 225, 270, 315, 360 };
+
     public static class FormattedPoints {
         public Point topLeft;
         public Point bottomRight;
@@ -28,6 +30,11 @@ public class ShapeDrawer {
         public boolean inside(int x, int y) {
             return (x >= topLeft.x && x <= bottomRight.x) && (y >= topLeft.y && y <= bottomRight.y);
         }
+
+        public FormattedPoints createSquare() {
+            int width = Math.min(getHeight(), getWidth());
+            return new FormattedPoints(topLeft.x, topRight.y, topLeft.x + width, topLeft.y + width);
+        }
     }
 
     public static void drawShape(String shape, int x1, int y1, int x2, int y2, int size, Graphics g) {
@@ -41,6 +48,17 @@ public class ShapeDrawer {
             drawCircle(x1, y1, x2, y2, size, g);
         } else if (shape.equals("Triangle")) {
             drawTriangle(x1, y1, x2, y2, size, g);
+        }
+    }
+
+    public static void drawRightShape(String shape, int x1, int y1, int x2, int y2, int size, Graphics g) {
+        if (shape.equals("Line")) {
+            Point endpoint = alignPoint(x1, y1, x2, y2);
+            drawShape(shape, x1, y1, endpoint.x, endpoint.y, size, g);
+        } else {
+            FormattedPoints squaredPoints = new FormattedPoints(x1, y1, x2, y2).createSquare();
+            drawShape(shape, squaredPoints.topLeft.x, squaredPoints.topLeft.y, squaredPoints.bottomRight.x,
+                    squaredPoints.bottomRight.y, size, g);
         }
     }
 
@@ -107,5 +125,31 @@ public class ShapeDrawer {
         g2d.setStroke(new BasicStroke(size));
         g2d.drawPolygon(x, y, 3);
         g2d.setStroke(oldStroke);
+    }
+
+    private static Point alignPoint(int x1, int y1, int x2, int y2) {
+        int Xdiff = x1 - x2;
+        int Ydiff = y1 - y2;
+        double dist = Math.sqrt(Ydiff * Ydiff + Xdiff * Xdiff);
+        double angle = Math.acos(Xdiff / dist);
+        angle = alignAngle(angle);
+        angle = Ydiff < 0 ? -angle : angle;
+
+        return new Point((int) Math.round(x1 - dist * Math.cos(angle)), (int) Math.round(y1 - dist * Math.sin(angle)));
+    }
+
+    private static double alignAngle(double angle) {
+        double degree = Math.toDegrees(angle);
+        double minDiff = Double.MAX_VALUE;
+        double result = 0;
+        for (double alignedAngle : alignedAngles) {
+            double diff = Math.abs(degree - alignedAngle);
+            if (diff < minDiff) {
+                minDiff = diff;
+                result = alignedAngle;
+            }
+        }
+
+        return Math.toRadians(result);
     }
 }
