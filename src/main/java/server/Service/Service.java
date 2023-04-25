@@ -29,20 +29,27 @@ public class Service extends Thread {
             Scanner sin = new Scanner(sock.getInputStream());
             PrintStream sout = new PrintStream(sock.getOutputStream());
 
-            String type = sin.nextLine(); // whether login or register
-            String username = sin.nextLine();
-            String password = sin.nextLine();
-
             AccountHandler accountHandler = new AccountHandler(databaseManager);
 
-            if (type.equals("login")) {
-                if (!accountHandler.login(username, password)) {
+            String operation = sin.nextLine();
+            if (operation.equals("login")) {
+                String username = sin.nextLine();
+                String password = sin.nextLine();
+                System.out.println(username);
+                System.out.println(password);
+                String token = accountHandler.login(username, password);
+                if (token == null) {
                     sout.println("500");
                     sout.println("Wrong username or password!");
-                    sock.close();
-                    return;
+                } else {
+                    sout.println("200");
+                    sout.println(token);
                 }
-            } else if (type.equals("register")) {
+                sock.close();
+                return;
+            } else if (operation.equals("register")) {
+                String username = sin.nextLine();
+                String password = sin.nextLine();
                 if (!accountHandler.register(username, password)) {
                     sout.println("500");
                     sout.println("Username already exists!");
@@ -50,24 +57,42 @@ public class Service extends Thread {
                     sout.println("200");
                 sock.close();
                 return;
-            } else {
-                sout.println("500");
-                sout.println("Unknown operation!");
+            } else if (operation.equals("logout")) {
+                String token = sin.nextLine();
+                String username = accountHandler.getSession(token);
+                if (username == null) {
+                    sout.println("500");
+                    sout.println("Invalid Token");
+                } else {
+                    sout.println("200");
+                    accountHandler.logout(username);
+                }
                 sock.close();
                 return;
-            }
-            // after login
-            sout.println("200");
-
-            while (true) {
-                String operation = sin.nextLine();
-                if (operation.equals("save")) {
+            } else if (operation.equals("save")) {
+                String token = sin.nextLine();
+                String username = accountHandler.getSession(token);
+                if (username == null) {
+                    sout.println("500");
+                    sout.println("Invalid Token");
+                } else {
+                    sout.println("200");
                     String filename = sin.nextLine();
                     String path = System.getProperty("user.dir") + "/userImage/" + username;
                     String hash = receiveImage(sock, path);
                     receiveImage(sock, path, hash + ".thumb");
                     sout.println(databaseManager.addDrawing(hash, username, filename));
-                } else if (operation.equals("list")) {
+                }
+                sock.close();
+                return;
+            } else if (operation.equals("list")) {
+                String token = sin.nextLine();
+                String username = accountHandler.getSession(token);
+                if (username == null) {
+                    sout.println("500");
+                    sout.println("Invalid Token");
+                } else {
+                    sout.println("200");
                     ArrayList<Drawing> drawings = databaseManager.getUserDrawings(username);
                     Collections.sort(drawings, new Comparator<Drawing>() {
                         @Override
@@ -93,12 +118,32 @@ public class Service extends Thread {
                         if (result == 500)
                             break;
                     }
-                } else if (operation.equals("get")) {
+                }
+                sock.close();
+                return;
+            } else if (operation.equals("get")) {
+                String token = sin.nextLine();
+                String username = accountHandler.getSession(token);
+                if (username == null) {
+                    sout.println("500");
+                    sout.println("Invalid Token");
+                } else {
+                    sout.println("200");
                     int ID = Integer.parseInt(sin.nextLine());
                     String hash = databaseManager.getDrawingHash(ID);
                     String path = System.getProperty("user.dir") + "/userImage/" + username + "/" + hash + ".png";
                     sendImage(sock, path);
-                } else if (operation.equals("update")) {
+                }
+                sock.close();
+                return;
+            } else if (operation.equals("update")) {
+                String token = sin.nextLine();
+                String username = accountHandler.getSession(token);
+                if (username == null) {
+                    sout.println("500");
+                    sout.println("Invalid Token");
+                } else {
+                    sout.println("200");
                     int ID = Integer.parseInt(sin.nextLine());
                     String filename = sin.nextLine();
                     String previousHash = databaseManager.getDrawingHash(ID);
@@ -107,18 +152,29 @@ public class Service extends Thread {
                     receiveImage(sock, path, newHash + ".thumb");
                     databaseManager.updateDrawing(ID, newHash, filename);
                     if (previousHash.equals(newHash))
-                        continue;
+                        return;
                     String oldpath = System.getProperty("user.dir") + "/userImage/" + username + "/" + previousHash;
                     File previousImage = new File(oldpath + ".png");
                     File previousThumb = new File(oldpath + ".thumb.png");
                     previousImage.delete();
                     previousThumb.delete();
-                } else if (operation.equals("delete")) {
+                }
+                sock.close();
+                return;
+            } else if (operation.equals("delete")) {
+                String token = sin.nextLine();
+                String username = accountHandler.getSession(token);
+                if (username == null) {
+                    sout.println("500");
+                    sout.println("Invalid Token");
+                } else {
+                    sout.println("200");
                     int ID = Integer.parseInt(sin.nextLine());
                     String hash = databaseManager.getDrawingHash(ID);
                     if (!databaseManager.deleteDrawing(ID)) {
                         sout.println("500");
-                        continue;
+                        sock.close();
+                        return;
                     }
                     String path = System.getProperty("user.dir") + "/userImage/" + username + "/" + hash;
                     File image = new File(path + ".png");
@@ -127,8 +183,14 @@ public class Service extends Thread {
                     thumb.delete();
                     sout.println("200");
                 }
+                sock.close();
+                return;
+            } else {
+                sout.println("500");
+                sout.println("Unknown operation!");
+                sock.close();
+                return;
             }
-
         } catch (Exception e) {
             System.out.println(sock.getInetAddress() + " closed");
         }

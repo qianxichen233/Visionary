@@ -3,16 +3,12 @@ package client.Panel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import java.io.*;
-import java.util.*;
 
 import javax.swing.*;
 import javax.swing.event.*;
 
 import client.ClientInstance;
+import client.SessionManager;
 import client.Panel.utils.*;
 import client.utils.*;
 
@@ -36,35 +32,28 @@ public class RegisterPanel extends MyPanel {
     }
 
     public void register(String username, String password) {
-        try {
-            Socket sock = new Socket(client.serverIP, client.serverPort);
-            Scanner sin = new Scanner(sock.getInputStream());
-            PrintStream sout = new PrintStream(sock.getOutputStream());
+        SessionManager.MySock mySock = client.sessionManager.newSock("register", false);
+        if (mySock == null)
+            return;
 
-            sout.println("register");
-            sout.println(username);
-            sout.println(password);
+        mySock.sout.println(username);
+        mySock.sout.println(password);
 
-            int result = Integer.parseInt(sin.nextLine());
-            if (result != 200) {
-                registerForm.setError(sin.nextLine());
-                sock.close();
-                return;
-            }
-            sock.close();
-
-            registerForm.setSuccess("Success!");
-            new setTimeout(new setTimeoutEvent() {
-                @Override
-                public void performAction() {
-                    client.loginPage();
-                }
-            }, 3000);
-        } catch (UnknownHostException e) {
-            System.out.println(e);
-        } catch (IOException e) {
-            System.out.println(e);
+        int result = Integer.parseInt(mySock.sin.nextLine());
+        if (result != 200) {
+            registerForm.setError(mySock.sin.nextLine());
+            mySock.close();
+            return;
         }
+        mySock.close();
+
+        registerForm.setSuccess("Success!");
+        new setTimeout(new setTimeoutEvent() {
+            @Override
+            public void performAction() {
+                client.loginPage();
+            }
+        }, 3000);
     }
 
     public void swtich() {

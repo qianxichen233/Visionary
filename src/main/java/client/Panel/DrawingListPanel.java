@@ -8,13 +8,13 @@ import java.awt.event.*;
 import java.util.*;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
-import java.text.*;
 
 import client.ClientInstance;
+import client.SessionManager;
 import client.Modal.Drawing;
 
 public class DrawingListPanel extends MyPanel {
-    private Socket sock;
+    private SessionManager sessionManager;
     private String username;
 
     public ArrayList<Drawing> drawings = new ArrayList<Drawing>();
@@ -23,9 +23,9 @@ public class DrawingListPanel extends MyPanel {
     private Header header;
     private DrawingList drawingList;
 
-    public DrawingListPanel(ClientInstance client, Socket sock, String username) {
+    public DrawingListPanel(ClientInstance client, SessionManager sessionManager, String username) {
         super(client);
-        this.sock = sock;
+        this.sessionManager = sessionManager;
         this.username = username;
 
         header = new Header(this, this.username);
@@ -49,14 +49,12 @@ public class DrawingListPanel extends MyPanel {
     }
 
     public void clickDrawing(Drawing drawing) {
-        try {
-            PrintStream sout = new PrintStream(sock.getOutputStream());
-            sout.println("get");
-            sout.println(drawing.ID);
-            client.drawingPage(receiveImage(sock), drawing.filename, drawing.ID);
-        } catch (IOException e) {
-            System.out.println(e);
-        }
+        SessionManager.MySock mySock = sessionManager.newSock("get", true);
+        if (mySock == null)
+            return;
+        mySock.sout.println(drawing.ID);
+        client.drawingPage(receiveImage(mySock.sock), drawing.filename, drawing.ID);
+        mySock.close();
     }
 
     public void openDrawing() {
@@ -84,11 +82,12 @@ public class DrawingListPanel extends MyPanel {
 
     public void deleteDrawing(Drawing drawing) {
         try {
-            PrintStream sout = new PrintStream(sock.getOutputStream());
-            Scanner sin = new Scanner(sock.getInputStream());
-            sout.println("delete");
-            sout.println(drawing.ID);
-            int result = Integer.parseInt(sin.nextLine());
+            SessionManager.MySock mySock = sessionManager.newSock("delete", true);
+            if (mySock == null)
+                return;
+            mySock.sout.println(drawing.ID);
+            int result = Integer.parseInt(mySock.sin.nextLine());
+            mySock.close();
             if (result == 200)
                 new getDrawings(this).start();
         } catch (Exception e) {
@@ -101,20 +100,20 @@ public class DrawingListPanel extends MyPanel {
     }
 
     public void logout() {
-        try {
-            sock.close();
-            client.loginPage();
-        } catch (IOException e) {
-            System.out.println(e);
-        }
+        SessionManager.MySock mySock = sessionManager.newSock("logout", true);
+        if (mySock == null)
+            return;
+        sessionManager.clearSession();
+        mySock.close();
+        client.loginPage();
     }
 
     public void render() {
         drawingList.render();
     }
 
-    public Socket getSocket() {
-        return sock;
+    public SessionManager getSessionManager() {
+        return sessionManager;
     }
 
     public static BufferedImage receiveImage(Socket sock) {
@@ -124,6 +123,8 @@ public class DrawingListPanel extends MyPanel {
 
             byte[] b = new byte[30];
             int len = in.read(b);
+
+            System.out.println(len);
 
             int filesize = Integer.parseInt(new String(b).substring(0, len));
 
@@ -458,25 +459,22 @@ class getDrawings extends Thread {
         panel.drawingFetched = false;
         panel.render();
 
-        Socket sock = panel.getSocket();
+        SessionManager sessionManager = panel.getSessionManager();
         panel.drawings.clear();
-        try {
-            Scanner sin = new Scanner(sock.getInputStream());
-            PrintStream sout = new PrintStream(sock.getOutputStream());
-            sout.println("list");
+        SessionManager.MySock mySock = sessionManager.newSock("list", true);
+        if (mySock == null)
+            return;
 
-            int number = Integer.parseInt(sin.nextLine());
-            for (int i = 0; i < number; ++i) {
-                int ID = Integer.parseInt(sin.nextLine());
-                String filename = sin.nextLine();
-                String createdAt = sin.nextLine();
-                BufferedImage thumb = DrawingListPanel.receiveImage(sock);
-                panel.drawings.add(new Drawing(ID, filename, createdAt, thumb));
-                sout.println("200");
-            }
-        } catch (IOException e) {
-            System.out.println(e);
+        int number = Integer.parseInt(mySock.sin.nextLine());
+        for (int i = 0; i < number; ++i) {
+            int ID = Integer.parseInt(mySock.sin.nextLine());
+            String filename = mySock.sin.nextLine();
+            String createdAt = mySock.sin.nextLine();
+            BufferedImage thumb = DrawingListPanel.receiveImage(mySock.sock);
+            panel.drawings.add(new Drawing(ID, filename, createdAt, thumb));
+            mySock.sout.println("200");
         }
+        mySock.close();
         panel.drawingFetched = true;
         panel.render();
     }

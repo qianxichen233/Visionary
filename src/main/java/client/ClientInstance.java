@@ -1,7 +1,6 @@
 package client;
 
 import java.awt.image.BufferedImage;
-import java.net.Socket;
 
 import javax.swing.JFrame;
 
@@ -13,15 +12,12 @@ public class ClientInstance extends Thread {
 
     public JFrame jf = new JFrame("Visionary");
 
-    public String serverIP;
-    public int serverPort;
+    public SessionManager sessionManager;
 
     private String username;
-    private Socket sock;
 
     public ClientInstance(String IP, int port) {
-        serverIP = IP;
-        serverPort = port;
+        sessionManager = new SessionManager(IP, port);
 
         jf.setSize(ClientInstance.windowWidth, ClientInstance.windowHeight);
         jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -34,8 +30,7 @@ public class ClientInstance extends Thread {
         loginPage();
     }
 
-    public void login(Socket sock, String username) {
-        this.sock = sock;
+    public void login(String username) {
         this.username = username;
         drawingListPage();
     }
@@ -49,22 +44,22 @@ public class ClientInstance extends Thread {
     }
 
     public void drawingPage() {
-        new DrawingPanel(this, sock, "untitled");
+        new DrawingPanel(this, sessionManager, "untitled");
     }
 
     public void drawingPage(BufferedImage image, String filename, int ID) {
-        new DrawingPanel(this, sock, filename, image, ID);
+        new DrawingPanel(this, sessionManager, filename, image, ID);
     }
 
     public void drawingPage(BufferedImage image, String filename) {
-        new DrawingPanel(this, sock, filename, image);
+        new DrawingPanel(this, sessionManager, filename, image);
     }
 
     public void drawingListPage() {
-        new DrawingListPanel(this, sock, username);
+        new DrawingListPanel(this, sessionManager, username);
     }
 
-    public Socket getSocket() {
-        return sock;
+    public SessionManager getSessionManager() {
+        return sessionManager;
     }
 }

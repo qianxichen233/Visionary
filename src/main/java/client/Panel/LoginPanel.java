@@ -3,16 +3,12 @@ package client.Panel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import java.io.*;
-import java.util.*;
 
 import javax.swing.*;
 import javax.swing.event.*;
 
 import client.ClientInstance;
+import client.SessionManager;
 import client.Panel.utils.*;
 import client.utils.*;
 
@@ -36,34 +32,29 @@ public class LoginPanel extends MyPanel {
     }
 
     public void login(final String username, final String password) {
-        try {
-            final Socket sock = new Socket(client.serverIP, client.serverPort);
-            Scanner sin = new Scanner(sock.getInputStream());
-            PrintStream sout = new PrintStream(sock.getOutputStream());
+        SessionManager.MySock mySock = client.sessionManager.newSock("login", false);
+        if (mySock == null)
+            return;
 
-            sout.println("login");
-            sout.println(username);
-            sout.println(password);
+        mySock.sout.println(username);
+        mySock.sout.println(password);
 
-            int result = Integer.parseInt(sin.nextLine());
-            if (result != 200) {
-                loginForm.setError(sin.nextLine());
-                sock.close();
-                return;
-            }
-
-            loginForm.setSuccess("Success!");
-            new setTimeout(new setTimeoutEvent() {
-                @Override
-                public void performAction() {
-                    client.login(sock, username);
-                }
-            }, 1000);
-        } catch (UnknownHostException e) {
-            System.out.println(e);
-        } catch (IOException e) {
-            System.out.println(e);
+        int result = Integer.parseInt(mySock.sin.nextLine());
+        if (result != 200) {
+            loginForm.setError(mySock.sin.nextLine());
+            mySock.close();
+            return;
         }
+        client.sessionManager.setSession(mySock.sin.nextLine());
+        mySock.close();
+
+        loginForm.setSuccess("Success!");
+        new setTimeout(new setTimeoutEvent() {
+            @Override
+            public void performAction() {
+                client.login(username);
+            }
+        }, 1000);
     }
 
     public void swtich() {

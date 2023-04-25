@@ -2,19 +2,19 @@ package client.Panel;
 
 import java.awt.image.BufferedImage;
 import java.net.Socket;
-import java.util.Scanner;
 import java.io.*;
 import javax.swing.*;
 
 import javax.imageio.ImageIO;
 
 import client.ClientInstance;
+import client.SessionManager;
 import client.Canvas.Canvas;
 import client.Toolbar.Toolbar;
 import client.utils.MyUtils;
 
 public class DrawingPanel extends MyPanel {
-    private Socket sock;
+    private SessionManager sessionManager;
     public String filename;
     private int ID;
 
@@ -23,26 +23,28 @@ public class DrawingPanel extends MyPanel {
     public Canvas canvas;
     public Toolbar toolbar;
 
-    public DrawingPanel(ClientInstance client, Socket sock, String filename, BufferedImage bufferedImage, int ID) {
+    public DrawingPanel(ClientInstance client, SessionManager sessionManager, String filename,
+            BufferedImage bufferedImage, int ID) {
         super(client);
-        this.sock = sock;
+        this.sessionManager = sessionManager;
         this.filename = filename;
         this.ID = ID;
         newDrawing = false;
         initWithImage(bufferedImage);
     }
 
-    public DrawingPanel(ClientInstance client, Socket sock, String filename, BufferedImage bufferedImage) {
+    public DrawingPanel(ClientInstance client, SessionManager sessionManager, String filename,
+            BufferedImage bufferedImage) {
         super(client);
-        this.sock = sock;
+        this.sessionManager = sessionManager;
         this.filename = filename;
         newDrawing = true;
         initWithImage(bufferedImage);
     }
 
-    public DrawingPanel(ClientInstance client, Socket sock, String filename) {
+    public DrawingPanel(ClientInstance client, SessionManager sessionManager, String filename) {
         super(client);
-        this.sock = sock;
+        this.sessionManager = sessionManager;
         this.filename = filename;
         newDrawing = true;
         initWithoutImage();
@@ -93,26 +95,29 @@ public class DrawingPanel extends MyPanel {
     public void saveAsImageRemote(BufferedImage image) {
         if (newDrawing) {
             try {
-                Scanner sin = new Scanner(sock.getInputStream());
-                PrintStream sout = new PrintStream(sock.getOutputStream());
-                sout.println("save");
-                sout.println(filename);
-                sendImage(image, sock);
-                sendImage(MyUtils.resize(image, 0.2), sock);
-                ID = Integer.parseInt(sin.nextLine());
+                SessionManager.MySock mySock = sessionManager.newSock("save", true);
+                if (mySock == null)
+                    return;
+                mySock.sout.println(filename);
+                sendImage(image, mySock.sock);
+                sendImage(MyUtils.resize(image, 0.2), mySock.sock);
+                ID = Integer.parseInt(mySock.sin.nextLine());
+                mySock.close();
                 newDrawing = false;
             } catch (Exception e) {
                 System.out.println(e);
             }
         } else {
             try {
-                PrintStream sout = new PrintStream(sock.getOutputStream());
-                sout.println("update");
-                sout.println(ID);
-                sout.println(filename);
+                SessionManager.MySock mySock = sessionManager.newSock("update", true);
+                if (mySock == null)
+                    return;
+                mySock.sout.println(ID);
+                mySock.sout.println(filename);
 
-                sendImage(image, sock);
-                sendImage(MyUtils.resize(image, 0.2), sock);
+                sendImage(image, mySock.sock);
+                sendImage(MyUtils.resize(image, 0.2), mySock.sock);
+                mySock.close();
             } catch (Exception e) {
                 System.out.println(e);
             }

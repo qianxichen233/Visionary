@@ -14,12 +14,12 @@ public class AccountHandler {
         this.databaseManager = databaseManager;
     }
 
-    public boolean login(String username, String password) {
+    public String login(String username, String password) {
         String pwd = databaseManager.getUserPassword(username);
         if (pwd == null)
-            return false;
+            return null;
         if (!Password.check(password, pwd).withArgon2())
-            return false;
+            return null;
         return createSession(username);
     }
 
@@ -36,9 +36,11 @@ public class AccountHandler {
         return clearSession(username);
     }
 
-    private boolean createSession(String username) {
+    private String createSession(String username) {
         String suuid = UUID.randomUUID().toString();
-        return databaseManager.addSession(suuid, username);
+        if (!databaseManager.addSession(suuid, username))
+            return null;
+        return suuid;
     }
 
     private boolean clearSession(String username) {
