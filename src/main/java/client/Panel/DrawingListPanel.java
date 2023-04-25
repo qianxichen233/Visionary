@@ -120,11 +120,11 @@ public class DrawingListPanel extends MyPanel {
         BufferedImage image;
         try {
             InputStream in = sock.getInputStream();
+            OutputStream out = sock.getOutputStream();
 
             byte[] b = new byte[30];
             int len = in.read(b);
-
-            System.out.println(len);
+            out.write((byte) 0);
 
             int filesize = Integer.parseInt(new String(b).substring(0, len));
 

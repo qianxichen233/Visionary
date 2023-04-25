@@ -201,9 +201,11 @@ public class Service extends Thread {
 
         try {
             InputStream in = sock.getInputStream();
+            OutputStream out = sock.getOutputStream();
 
             byte[] b = new byte[30];
             int len = in.read(b);
+            out.write((byte) 0);
 
             int filesize = Integer.parseInt(new String(b).substring(0, len));
 
@@ -229,9 +231,11 @@ public class Service extends Thread {
     public void receiveImage(Socket sock, String path, String filename) {
         try {
             InputStream in = sock.getInputStream();
+            OutputStream out = sock.getOutputStream();
 
             byte[] b = new byte[30];
             int len = in.read(b);
+            out.write((byte) 0);
 
             int filesize = Integer.parseInt(new String(b).substring(0, len));
 
@@ -255,6 +259,7 @@ public class Service extends Thread {
         try {
             BufferedImage image = ImageIO.read(new File(path));
             OutputStream out = sock.getOutputStream();
+            InputStream in = sock.getInputStream();
 
             ByteArrayOutputStream bScrn = new ByteArrayOutputStream();
             ImageIO.write(image, "png", bScrn);
@@ -262,6 +267,7 @@ public class Service extends Thread {
             bScrn.close();
 
             out.write((Integer.toString(imgBytes.length)).getBytes());
+            in.read();
             out.write(imgBytes, 0, imgBytes.length);
         } catch (Exception e) {
             System.out.println(e);

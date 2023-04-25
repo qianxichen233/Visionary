@@ -130,6 +130,7 @@ public class DrawingPanel extends MyPanel {
 
     private static void sendImage(BufferedImage image, Socket sock) throws IOException {
         OutputStream out = sock.getOutputStream();
+        InputStream in = sock.getInputStream();
 
         ByteArrayOutputStream bScrn = new ByteArrayOutputStream();
         ImageIO.write(image, "png", bScrn);
@@ -137,6 +138,7 @@ public class DrawingPanel extends MyPanel {
         bScrn.close();
 
         out.write((Integer.toString(imgBytes.length)).getBytes());
+        in.read();
         out.write(imgBytes, 0, imgBytes.length);
     }
 }
