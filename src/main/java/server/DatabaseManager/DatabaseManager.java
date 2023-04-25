@@ -205,6 +205,50 @@ public class DatabaseManager {
         return true;
     }
 
+    public boolean addSession(String token, String username) {
+        String sql = "INSERT INTO session VALUES(?, ?)";
+        try {
+            PreparedStatement s = conn.prepareStatement(sql);
+            s.setString(1, token);
+            s.setString(2, username);
+            s.executeQuery();
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
+
+    public String getSession(String token) {
+        String username = null;
+        String sql = "SELECT username FROM session WHERE token = ? LIMIT 1";
+        try {
+            PreparedStatement s = conn.prepareStatement(sql);
+            s.setString(1, token);
+            s.executeQuery();
+            ResultSet rs = s.executeQuery();
+            if (rs.next())
+                username = rs.getString("username");
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+
+        return username;
+    }
+
+    public boolean clearSession(String username) {
+        String sql = "DELETE FROM session WHERE username = ?";
+
+        try {
+            PreparedStatement s = conn.prepareStatement(sql);
+            s.setString(1, username);
+            s.executeQuery();
+        } catch (Exception e) {
+            System.out.println(e);
+            return false;
+        }
+        return true;
+    }
+
     public Connection getConnection() {
         return conn;
     }

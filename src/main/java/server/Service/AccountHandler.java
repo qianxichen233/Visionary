@@ -1,5 +1,7 @@
 package server.Service;
 
+import java.util.UUID;
+
 import com.password4j.Hash;
 import com.password4j.Password;
 
@@ -16,11 +18,30 @@ public class AccountHandler {
         String pwd = databaseManager.getUserPassword(username);
         if (pwd == null)
             return false;
-        return Password.check(password, pwd).withArgon2();
+        if (!Password.check(password, pwd).withArgon2())
+            return false;
+        return createSession(username);
     }
 
     public boolean register(String username, String password) {
         Hash hash = Password.hash(password).withArgon2();
         return databaseManager.addUser(username, hash.getResult());
+    }
+
+    public String getSession(String token) {
+        return databaseManager.getSession(token);
+    }
+
+    public boolean logout(String username) {
+        return clearSession(username);
+    }
+
+    private boolean createSession(String username) {
+        String suuid = UUID.randomUUID().toString();
+        return databaseManager.addSession(suuid, username);
+    }
+
+    private boolean clearSession(String username) {
+        return databaseManager.clearSession(username);
     }
 }
