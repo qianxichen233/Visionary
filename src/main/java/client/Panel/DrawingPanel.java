@@ -79,6 +79,7 @@ public class DrawingPanel extends MyPanel {
     }
 
     public void saveAsImage(BufferedImage image, String path) {
+        image = MyUtils.EncryptBufferedImage(image);
         if (!path.endsWith(".png")) {
             path = path + ".png";
         }
