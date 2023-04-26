@@ -319,6 +319,7 @@ class DrawingList extends JPanel {
             add(row);
             add(getPlaceholder());
         }
+        add(getPlaceholder());
 
         scroller.validate();
         scroller.repaint();

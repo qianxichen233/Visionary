@@ -134,8 +134,8 @@ public class DrawingPanel extends MyPanel {
                 MyUtils.sendByteArray(mySock.sock, main.iv);
                 MyUtils.sendByteArray(mySock.sock, thumb.iv);
 
-                sendImage(image, mySock.sock);
-                sendImage(MyUtils.resize(image, 0.2), mySock.sock);
+                sendImage(main.image, mySock.sock);
+                sendImage(thumb.image, mySock.sock);
                 mySock.close();
             } catch (Exception e) {
                 System.out.println(e);
