@@ -38,6 +38,7 @@ public class Service extends Thread {
                 String token = accountHandler.login(username, password);
                 if (token == null) {
                     sout.println("500");
+                    sin.nextLine();
                     sout.println("Wrong username or password!");
                 } else {
                     sout.println("200");
