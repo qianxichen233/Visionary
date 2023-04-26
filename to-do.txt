@@ -1,3 +1,2 @@
-1. image encryption before sending to the server ?
-2. add different brushes ?
-3. resize clip on select mode ?
+1. add different brushes ?
+2. resize clip on select mode ?
