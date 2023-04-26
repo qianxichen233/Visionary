@@ -12,9 +12,12 @@ import javax.imageio.ImageIO;
 import client.ClientInstance;
 import client.SessionManager;
 import client.Modal.Drawing;
+import client.utils.ImageEncryptor;
+import client.utils.MyUtils;
 
 public class DrawingListPanel extends MyPanel {
     private SessionManager sessionManager;
+    private ImageEncryptor imageEncryptor;
     private String username;
 
     public ArrayList<Drawing> drawings = new ArrayList<Drawing>();
@@ -23,9 +26,11 @@ public class DrawingListPanel extends MyPanel {
     private Header header;
     private DrawingList drawingList;
 
-    public DrawingListPanel(ClientInstance client, SessionManager sessionManager, String username) {
+    public DrawingListPanel(ClientInstance client, SessionManager sessionManager, ImageEncryptor imageEncryptor,
+            String username) {
         super(client);
         this.sessionManager = sessionManager;
+        this.imageEncryptor = imageEncryptor;
         this.username = username;
 
         header = new Header(this, this.username);
@@ -53,7 +58,9 @@ public class DrawingListPanel extends MyPanel {
         if (mySock == null)
             return;
         mySock.sout.println(drawing.ID);
-        client.drawingPage(receiveImage(mySock.sock), drawing.filename, drawing.ID);
+        byte[] iv = MyUtils.receiveByteArray(mySock.sock);
+        client.drawingPage(imageEncryptor.decrypt(new ImageEncryptor.EncryptedImage(receiveImage(mySock.sock), iv)),
+                drawing.filename, drawing.ID);
         mySock.close();
     }
 
@@ -114,6 +121,10 @@ public class DrawingListPanel extends MyPanel {
 
     public SessionManager getSessionManager() {
         return sessionManager;
+    }
+
+    public ImageEncryptor getImageEncryptor() {
+        return imageEncryptor;
     }
 
     public static BufferedImage receiveImage(Socket sock) {
@@ -460,6 +471,7 @@ class getDrawings extends Thread {
         panel.render();
 
         SessionManager sessionManager = panel.getSessionManager();
+        ImageEncryptor imageEncryptor = panel.getImageEncryptor();
         panel.drawings.clear();
         SessionManager.MySock mySock = sessionManager.newSock("list", true);
         if (mySock == null)
@@ -470,7 +482,10 @@ class getDrawings extends Thread {
             int ID = Integer.parseInt(mySock.sin.nextLine());
             String filename = mySock.sin.nextLine();
             String createdAt = mySock.sin.nextLine();
-            BufferedImage thumb = DrawingListPanel.receiveImage(mySock.sock);
+            mySock.sout.println("200");
+            byte[] iv = MyUtils.receiveByteArray(mySock.sock);
+            BufferedImage thumb = imageEncryptor
+                    .decrypt(new ImageEncryptor.EncryptedImage(DrawingListPanel.receiveImage(mySock.sock), iv));
             panel.drawings.add(new Drawing(ID, filename, createdAt, thumb));
             mySock.sout.println("200");
         }

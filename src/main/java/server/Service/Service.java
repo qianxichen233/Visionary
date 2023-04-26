@@ -35,8 +35,6 @@ public class Service extends Thread {
             if (operation.equals("login")) {
                 String username = sin.nextLine();
                 String password = sin.nextLine();
-                System.out.println(username);
-                System.out.println(password);
                 String token = accountHandler.login(username, password);
                 if (token == null) {
                     sout.println("500");
@@ -44,13 +42,15 @@ public class Service extends Thread {
                 } else {
                     sout.println("200");
                     sout.println(token);
+                    sendByteArray(sock, databaseManager.getUserSalt(username));
                 }
                 sock.close();
                 return;
             } else if (operation.equals("register")) {
                 String username = sin.nextLine();
                 String password = sin.nextLine();
-                if (!accountHandler.register(username, password)) {
+                byte[] salt = receiveByteArray(sock);
+                if (!accountHandler.register(username, password, salt)) {
                     sout.println("500");
                     sout.println("Username already exists!");
                 } else
@@ -79,9 +79,11 @@ public class Service extends Thread {
                     sout.println("200");
                     String filename = sin.nextLine();
                     String path = System.getProperty("user.dir") + "/userImage/" + username;
+                    byte[] iv = receiveByteArray(sock);
+                    byte[] thumb_iv = receiveByteArray(sock);
                     String hash = receiveImage(sock, path);
                     receiveImage(sock, path, hash + ".thumb");
-                    sout.println(databaseManager.addDrawing(hash, username, filename));
+                    sout.println(databaseManager.addDrawing(hash, username, filename, iv, thumb_iv));
                 }
                 sock.close();
                 return;
@@ -110,6 +112,8 @@ public class Service extends Thread {
                         sout.println(drawing.ID);
                         sout.println(drawing.filename);
                         sout.println(drawing.createdAt);
+                        sin.nextLine();
+                        sendByteArray(sock, drawing.thumb_iv);
                         String path = System.getProperty("user.dir") + "/userImage/" + username + "/" + drawing.hash
                                 + ".thumb.png";
                         sendImage(sock, path);
@@ -130,6 +134,8 @@ public class Service extends Thread {
                     sout.println("200");
                     int ID = Integer.parseInt(sin.nextLine());
                     String hash = databaseManager.getDrawingHash(ID);
+                    byte[] iv = databaseManager.getDrawingIV(ID);
+                    sendByteArray(sock, iv);
                     String path = System.getProperty("user.dir") + "/userImage/" + username + "/" + hash + ".png";
                     sendImage(sock, path);
                 }
@@ -147,9 +153,11 @@ public class Service extends Thread {
                     String filename = sin.nextLine();
                     String previousHash = databaseManager.getDrawingHash(ID);
                     String path = System.getProperty("user.dir") + "/userImage/" + username;
+                    byte[] iv = receiveByteArray(sock);
+                    byte[] thumb_iv = receiveByteArray(sock);
                     String newHash = receiveImage(sock, path);
                     receiveImage(sock, path, newHash + ".thumb");
-                    databaseManager.updateDrawing(ID, newHash, filename);
+                    databaseManager.updateDrawing(ID, newHash, filename, iv, thumb_iv);
                     if (previousHash.equals(newHash))
                         return;
                     String oldpath = System.getProperty("user.dir") + "/userImage/" + username + "/" + previousHash;
@@ -284,5 +292,28 @@ public class Service extends Thread {
             index += bytesRead;
         }
         return data;
+    }
+
+    public static void sendByteArray(Socket sock, byte[] bytes) throws IOException {
+        // DataInputStream dIn = new DataInputStream(sock.getInputStream());
+        DataOutputStream dOut = new DataOutputStream(sock.getOutputStream());
+
+        // dIn.readByte();
+        dOut.writeInt(bytes.length);
+        dOut.write(bytes);
+    }
+
+    public static byte[] receiveByteArray(Socket sock) throws IOException {
+        DataInputStream dIn = new DataInputStream(sock.getInputStream());
+        // DataOutputStream dOut = new DataOutputStream(sock.getOutputStream());
+
+        // dOut.writeByte(0);
+        int length = dIn.readInt();
+        if (length > 0) {
+            byte[] message = new byte[length];
+            dIn.readFully(message, 0, message.length);
+            return message;
+        }
+        return null;
     }
 }

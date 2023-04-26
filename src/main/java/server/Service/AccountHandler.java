@@ -26,9 +26,9 @@ public class AccountHandler {
         return token;
     }
 
-    public boolean register(String username, String password) {
+    public boolean register(String username, String password, byte[] salt) {
         Hash hash = Password.hash(password).withArgon2();
-        return databaseManager.addUser(username, hash.getResult());
+        return databaseManager.addUser(username, hash.getResult(), salt);
     }
 
     public String getSession(String token) {

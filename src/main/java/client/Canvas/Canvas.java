@@ -144,7 +144,7 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
         this.panel = panel;
         mainCanvas = new BufferedImage(
                 getWidth(), getHeight(),
-                BufferedImage.TYPE_INT_ARGB);
+                BufferedImage.TYPE_4BYTE_ABGR);
         Graphics2D ig2 = mainCanvas.createGraphics();
         ig2.setBackground(backgroundColor);
         ig2.clearRect(0, 0, getWidth(), getHeight());

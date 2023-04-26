@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 import javax.swing.JFrame;
 
 import client.Panel.*;
+import client.utils.ImageEncryptor;
 
 public class ClientInstance extends Thread {
     public static final int windowHeight = 700;
@@ -13,6 +14,7 @@ public class ClientInstance extends Thread {
     public JFrame jf = new JFrame("Visionary");
 
     public SessionManager sessionManager;
+    public ImageEncryptor imageEncryptor;
 
     private String username;
 
@@ -44,19 +46,19 @@ public class ClientInstance extends Thread {
     }
 
     public void drawingPage() {
-        new DrawingPanel(this, sessionManager, "untitled");
+        new DrawingPanel(this, sessionManager, imageEncryptor, "untitled");
     }
 
     public void drawingPage(BufferedImage image, String filename, int ID) {
-        new DrawingPanel(this, sessionManager, filename, image, ID);
+        new DrawingPanel(this, sessionManager, imageEncryptor, filename, image, ID);
     }
 
     public void drawingPage(BufferedImage image, String filename) {
-        new DrawingPanel(this, sessionManager, filename, image);
+        new DrawingPanel(this, sessionManager, imageEncryptor, filename, image);
     }
 
     public void drawingListPage() {
-        new DrawingListPanel(this, sessionManager, username);
+        new DrawingListPanel(this, sessionManager, imageEncryptor, username);
     }
 
     public SessionManager getSessionManager() {

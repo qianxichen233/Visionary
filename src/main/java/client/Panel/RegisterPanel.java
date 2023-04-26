@@ -38,6 +38,7 @@ public class RegisterPanel extends MyPanel {
 
         mySock.sout.println(username);
         mySock.sout.println(password);
+        MyUtils.sendByteArray(mySock.sock, ImageEncryptor.genSalt());
 
         int result = Integer.parseInt(mySock.sin.nextLine());
         if (result != 200) {

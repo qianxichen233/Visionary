@@ -46,6 +46,7 @@ public class LoginPanel extends MyPanel {
             return;
         }
         client.sessionManager.setSession(mySock.sin.nextLine());
+        client.imageEncryptor = new ImageEncryptor(password, MyUtils.receiveByteArray(mySock.sock));
         mySock.close();
 
         loginForm.setSuccess("Success!");

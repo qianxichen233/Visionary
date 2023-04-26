@@ -86,12 +86,13 @@ public class DatabaseManager {
         }
     }
 
-    public boolean addUser(String username, String password) {
-        String sql = "INSERT INTO user VALUES(?, ?)";
+    public boolean addUser(String username, String password, byte[] salt) {
+        String sql = "INSERT INTO user VALUES(?, ?, ?)";
         try {
             PreparedStatement s = conn.prepareStatement(sql);
             s.setString(1, username);
             s.setString(2, password);
+            s.setBytes(3, salt);
             s.executeQuery();
         } catch (Exception e) {
             return false;
@@ -99,8 +100,8 @@ public class DatabaseManager {
         return true;
     }
 
-    public int addDrawing(String hash, String username, String filename) {
-        String sql = "INSERT INTO drawing(hash, username, filename, createdAt) VALUES(?, ?, ?, ?)";
+    public int addDrawing(String hash, String username, String filename, byte[] iv, byte[] thumb_iv) {
+        String sql = "INSERT INTO drawing(hash, username, filename, createdAt, iv, thumb_iv) VALUES(?, ?, ?, ?, ?, ?)";
         String now = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
         int newID = -1;
         try {
@@ -109,6 +110,8 @@ public class DatabaseManager {
             s.setString(2, username);
             s.setString(3, filename);
             s.setString(4, now);
+            s.setBytes(5, iv);
+            s.setBytes(6, thumb_iv);
             s.executeQuery();
             ResultSet rs = s.getGeneratedKeys();
             rs.next();
@@ -119,15 +122,17 @@ public class DatabaseManager {
         return newID;
     }
 
-    public boolean updateDrawing(int ID, String hash, String filename) {
-        String sql = "UPDATE drawing SET hash = ?, filename = ?, createdAt = ? WHERE ID = ?";
+    public boolean updateDrawing(int ID, String hash, String filename, byte[] iv, byte[] thumb_iv) {
+        String sql = "UPDATE drawing SET hash = ?, filename = ?, createdAt = ?, iv = ?, thumb_iv = ? WHERE ID = ?";
         String now = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
         try {
             PreparedStatement s = conn.prepareStatement(sql);
             s.setString(1, hash);
             s.setString(2, filename);
             s.setString(3, now);
-            s.setInt(4, ID);
+            s.setBytes(4, iv);
+            s.setBytes(5, thumb_iv);
+            s.setInt(6, ID);
             s.executeQuery();
         } catch (Exception e) {
             return false;
@@ -152,6 +157,23 @@ public class DatabaseManager {
         return password;
     }
 
+    public byte[] getUserSalt(String username) {
+        byte[] salt = null;
+        String sql = "SELECT key_salt FROM user WHERE username = ? LIMIT 1";
+        try {
+            PreparedStatement s = conn.prepareStatement(sql);
+            s.setString(1, username);
+            s.executeQuery();
+            ResultSet rs = s.executeQuery();
+            if (rs.next())
+                salt = rs.getBytes("key_salt");
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+
+        return salt;
+    }
+
     public ArrayList<Drawing> getUserDrawings(String username) {
         ArrayList<Drawing> result = new ArrayList<Drawing>();
         String sql = "SELECT * FROM drawing WHERE username = ?";
@@ -165,7 +187,9 @@ public class DatabaseManager {
                         rs.getString("hash"),
                         rs.getString("username"),
                         rs.getString("filename"),
-                        rs.getString("createdAt")));
+                        rs.getString("createdAt"),
+                        rs.getBytes("iv"),
+                        rs.getBytes("thumb_iv")));
             }
         } catch (Exception e) {
             System.out.println(e);
@@ -190,6 +214,24 @@ public class DatabaseManager {
         }
 
         return hash;
+    }
+
+    public byte[] getDrawingIV(int ID) {
+        byte[] iv = null;
+        String sql = "SELECT iv FROM drawing WHERE ID = ? LIMIT 1";
+
+        try {
+            PreparedStatement s = conn.prepareStatement(sql);
+            s.setInt(1, ID);
+            s.executeQuery();
+            ResultSet rs = s.executeQuery();
+            if (rs.next())
+                iv = rs.getBytes("iv");
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+
+        return iv;
     }
 
     public boolean deleteDrawing(int ID) {

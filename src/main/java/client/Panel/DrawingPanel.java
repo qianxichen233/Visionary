@@ -11,10 +11,12 @@ import client.ClientInstance;
 import client.SessionManager;
 import client.Canvas.Canvas;
 import client.Toolbar.Toolbar;
+import client.utils.ImageEncryptor;
 import client.utils.MyUtils;
 
 public class DrawingPanel extends MyPanel {
     private SessionManager sessionManager;
+    private ImageEncryptor imageEncryptor;
     public String filename;
     private int ID;
 
@@ -23,28 +25,34 @@ public class DrawingPanel extends MyPanel {
     public Canvas canvas;
     public Toolbar toolbar;
 
-    public DrawingPanel(ClientInstance client, SessionManager sessionManager, String filename,
+    public DrawingPanel(ClientInstance client, SessionManager sessionManager, ImageEncryptor imageEncryptor,
+            String filename,
             BufferedImage bufferedImage, int ID) {
         super(client);
         this.sessionManager = sessionManager;
+        this.imageEncryptor = imageEncryptor;
         this.filename = filename;
         this.ID = ID;
         newDrawing = false;
         initWithImage(bufferedImage);
     }
 
-    public DrawingPanel(ClientInstance client, SessionManager sessionManager, String filename,
+    public DrawingPanel(ClientInstance client, SessionManager sessionManager, ImageEncryptor imageEncryptor,
+            String filename,
             BufferedImage bufferedImage) {
         super(client);
         this.sessionManager = sessionManager;
+        this.imageEncryptor = imageEncryptor;
         this.filename = filename;
         newDrawing = true;
         initWithImage(bufferedImage);
     }
 
-    public DrawingPanel(ClientInstance client, SessionManager sessionManager, String filename) {
+    public DrawingPanel(ClientInstance client, SessionManager sessionManager, ImageEncryptor imageEncryptor,
+            String filename) {
         super(client);
         this.sessionManager = sessionManager;
+        this.imageEncryptor = imageEncryptor;
         this.filename = filename;
         newDrawing = true;
         initWithoutImage();
@@ -79,7 +87,6 @@ public class DrawingPanel extends MyPanel {
     }
 
     public void saveAsImage(BufferedImage image, String path) {
-        image = MyUtils.EncryptBufferedImage(image);
         if (!path.endsWith(".png")) {
             path = path + ".png";
         }
@@ -100,8 +107,14 @@ public class DrawingPanel extends MyPanel {
                 if (mySock == null)
                     return;
                 mySock.sout.println(filename);
-                sendImage(image, mySock.sock);
-                sendImage(MyUtils.resize(image, 0.2), mySock.sock);
+
+                ImageEncryptor.EncryptedImage main = imageEncryptor.encrypt(image);
+                ImageEncryptor.EncryptedImage thumb = imageEncryptor.encrypt(MyUtils.resize(image, 0.2));
+                MyUtils.sendByteArray(mySock.sock, main.iv);
+                MyUtils.sendByteArray(mySock.sock, thumb.iv);
+
+                sendImage(main.image, mySock.sock);
+                sendImage(thumb.image, mySock.sock);
                 ID = Integer.parseInt(mySock.sin.nextLine());
                 mySock.close();
                 newDrawing = false;
@@ -115,6 +128,11 @@ public class DrawingPanel extends MyPanel {
                     return;
                 mySock.sout.println(ID);
                 mySock.sout.println(filename);
+
+                ImageEncryptor.EncryptedImage main = imageEncryptor.encrypt(image);
+                ImageEncryptor.EncryptedImage thumb = imageEncryptor.encrypt(MyUtils.resize(image, 0.2));
+                MyUtils.sendByteArray(mySock.sock, main.iv);
+                MyUtils.sendByteArray(mySock.sock, thumb.iv);
 
                 sendImage(image, mySock.sock);
                 sendImage(MyUtils.resize(image, 0.2), mySock.sock);
