@@ -1,4 +1,3 @@
-
 # Visionary - Java Based Desktop Drawing App
 
 ---
@@ -62,17 +61,9 @@ The project implemented a full-stack desktop application that can help user to c
     - SQL statement is carefully composed to avoid SQL injection attack
     - all images stored on server machine is encrypted with AES CTR mode on client side, making the image content access exclusive to client/user
     - User's secret key is generated with user's password and salt using Password-Based Key Derivation Function 2 (pbkdf2) with HMAC-SHA256, where the salt is stored on the server side, and password is only known by the user (password stored on server is not the original password), allowing user to decrypt their own cloud drawings but no one else could do that
-    - Example:
-	<div style="display: flex; justify-content: space-around;">
-	    <div style="display: flex; flex-direction: column; text-align: center;">
-		    <img src="https://user-images.githubusercontent.com/53324229/236570351-95bdc8ec-1576-4de6-a983-5d8cad9282ca.png" width="250">
-			<span>User Drawing</span>
-	    </div>
-	    <div style="display: flex; flex-direction: column;">
-		    <img src="https://user-images.githubusercontent.com/53324229/236570411-4e855474-c8bf-45ba-a599-3761e53eacb3.png" width="250">
-			<span>Drawing saved on server (Encrypted)</span>
-	    </div>
-	</div>
+    - Example(left: user's drawing; right: encrypted image stored on server):\
+      <img src="https://user-images.githubusercontent.com/53324229/236570351-95bdc8ec-1576-4de6-a983-5d8cad9282ca.png" width="250">
+      <img src="https://user-images.githubusercontent.com/53324229/236570411-4e855474-c8bf-45ba-a599-3761e53eacb3.png" width="250">
 
 ### External Packages Used
 
