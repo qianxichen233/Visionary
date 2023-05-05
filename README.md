@@ -1,10 +1,11 @@
+
 # Visionary - Java Based Desktop Drawing App
 
 ---
 
 ### Project Description
 
-This project is made for CS-UY 3913 (Java)
+This project is made for CS-UY 3913 (Java)\
 The project implemented a full-stack desktop application that can help user to create their own drawing, with features including:
 
 1. Various Painting Tools:
@@ -19,7 +20,7 @@ The project implemented a full-stack desktop application that can help user to c
     - Shape drawer:
         - Allow users to draw accurate shapes
         - Supported shapes: line, rectangle, oval, triangle
-        - When shift is pressed, the shape being drawn will be automatically formated (rectangle becomes square, oval becomes circle, etc.)
+        - When shift is pressed, the shape being drawn will be automatically formatted (rectangle becomes square, oval becomes circle, etc.)
     - Eraser:
         - Able to erase traces on the canvas
     - Color picker:
@@ -44,7 +45,7 @@ The project implemented a full-stack desktop application that can help user to c
     - Remote file:
         - An option to save the drawing to "cloud" server is supported
         - User can sync their drawing with "cloud" server, and retrieve their drawing whenever they want
-        - A page displaying all drawings belonged to the user sorted by the last modified date will be shown, in which user can choose to edit any of them, and async the changes as well
+        - A page displaying all drawings belonged to the user sorted by the last modified date will be shown, in which user can choose to edit any of them, and sync the changes as well
 3. Register/Login System:
     - User must register an account to use the app
     - Once properly entered the username and password, user is able to log in, and see all of their drawings on "cloud" server
@@ -56,13 +57,24 @@ The project implemented a full-stack desktop application that can help user to c
         - Each session token will be expired after 30 days
     - User File Management:
         - User's drawing is stored on server machine's file system, with image's hash as primary search key
-5. Sercurity:
-    - Password is securly hashed before storing into the database
+5. Security:
+    - Password is securely hashed before storing into the database
     - SQL statement is carefully composed to avoid SQL injection attack
     - all images stored on server machine is encrypted with AES CTR mode on client side, making the image content access exclusive to client/user
     - User's secret key is generated with user's password and salt using Password-Based Key Derivation Function 2 (pbkdf2) with HMAC-SHA256, where the salt is stored on the server side, and password is only known by the user (password stored on server is not the original password), allowing user to decrypt their own cloud drawings but no one else could do that
+    - Example:
+	<div style="display: flex; justify-content: space-around;">
+	    <div style="display: flex; flex-direction: column; text-align: center;">
+		    <img src="https://user-images.githubusercontent.com/53324229/236570351-95bdc8ec-1576-4de6-a983-5d8cad9282ca.png" width="250">
+			<span>User Drawing</span>
+	    </div>
+	    <div style="display: flex; flex-direction: column;">
+		    <img src="https://user-images.githubusercontent.com/53324229/236570411-4e855474-c8bf-45ba-a599-3761e53eacb3.png" width="250">
+			<span>Drawing saved on server (Encrypted)</span>
+	    </div>
+	</div>
 
 ### External Packages Used
 
 1. mariadb: JDBC driver
-2. password4j: used for securly hash the password
+2. password4j: used for securely hash the password
