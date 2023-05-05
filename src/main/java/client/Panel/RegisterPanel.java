@@ -97,7 +97,7 @@ class RegisterForm extends JPanel {
             }
         });
 
-        final InputField password = new InputField("Password");
+        final InputField password = new InputField("Password", InputField.TYPE_PASSWORD);
         password.getJTextArea().getDocument().addDocumentListener(new DocumentListener() {
             public void update() {
                 clearError();
@@ -143,7 +143,9 @@ class RegisterForm extends JPanel {
         messagePanel.add(message);
 
         JPanel titlePanel = new JPanel(new GridBagLayout());
-        titlePanel.add(new JLabel("Register"));
+        JLabel registerText = new JLabel("Register");
+        registerText.setFont(new Font(registerText.getFont().getFontName(), Font.BOLD, 18));
+        titlePanel.add(registerText);
 
         JPanel switchPanel = new JPanel(new GridBagLayout());
         JButton switchButton = new JButton("Already Have Account? Login!");

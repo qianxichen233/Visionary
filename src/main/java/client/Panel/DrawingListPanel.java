@@ -10,6 +10,7 @@ import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 
 import client.ClientInstance;
+import client.IconManager;
 import client.SessionManager;
 import client.Modal.Drawing;
 import client.utils.ImageEncryptor;
@@ -190,11 +191,13 @@ class Header extends JPanel {
 
         JPanel usernamePanel = new JPanel(new GridBagLayout());
         JLabel usernameText = new JLabel("Hello, " + this.username);
+        usernameText.setFont(new Font(usernameText.getFont().getFontName(), Font.PLAIN, 14));
         usernamePanel.add(gapLeft);
         usernamePanel.add(usernameText);
 
         JPanel titlePanel = new JPanel(new GridBagLayout());
         JLabel title = new JLabel("My Gallery");
+        title.setFont(new Font(title.getFont().getFontName(), Font.BOLD, 18));
         titlePanel.add(title);
 
         JPanel logoutPanel = new JPanel(new GridBagLayout());
@@ -411,14 +414,8 @@ class DrawingItem extends JPanel {
         this.drawing = drawing;
         this.listPanel = listPanel;
         addMouseListener(new onClickListener(drawing));
-        JButton deleteButton = new JButton("X");
-        deleteButton.setBounds(0, 0, 20, 20);
-        deleteButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                DrawingItem.this.listPanel.onDelete(DrawingItem.this.drawing);
-            }
-        });
+        final JButton deleteButton = new JButton("X");
+        deleteButton.setBounds(5, 5, 20, 20);
         add(deleteButton);
         setCursor(new Cursor(Cursor.HAND_CURSOR));
         setLayout(null);
@@ -427,6 +424,7 @@ class DrawingItem extends JPanel {
     public DrawingItem(DrawingList listPanel, String type) {
         this.listPanel = listPanel;
         this.type = type;
+        setCursor(new Cursor(Cursor.HAND_CURSOR));
         addMouseListener(new onClickListener(this.type));
     }
 
@@ -448,13 +446,27 @@ class DrawingItem extends JPanel {
             width = g.getFontMetrics().stringWidth(drawing.createdAt);
             g.drawString(drawing.createdAt, (getWidth() - width) / 2, getHeight() - 10);
         } else if (type == "new") {
-            g.setColor(Color.GRAY);
+            try {
+                BufferedImage Icon = IconManager.getIcon("add.png");
+                g.drawImage(Icon, (getWidth() - IconManager.defaultWidth) / 2,
+                        (getHeight() - IconManager.defaultHeight) / 2, null);
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+            g.setColor(Color.BLACK);
             int width = g.getFontMetrics().stringWidth(newText);
-            g.drawString(newText, (getWidth() - width) / 2, getHeight() / 2);
+            g.drawString(newText, (getWidth() - width) / 2, 3 * getHeight() / 4);
         } else if (type == "open") {
-            g.setColor(Color.GRAY);
+            try {
+                BufferedImage Icon = IconManager.getIcon("folder.png");
+                g.drawImage(Icon, (getWidth() - IconManager.defaultWidth) / 2,
+                        (getHeight() - IconManager.defaultHeight) / 2, null);
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+            g.setColor(Color.BLACK);
             int width = g.getFontMetrics().stringWidth(openText);
-            g.drawString(openText, (getWidth() - width) / 2, getHeight() / 2);
+            g.drawString(openText, (getWidth() - width) / 2, 3 * getHeight() / 4);
         }
     }
 }

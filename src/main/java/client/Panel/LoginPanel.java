@@ -99,7 +99,7 @@ class LoginForm extends JPanel {
             }
         });
 
-        final InputField password = new InputField("Password");
+        final InputField password = new InputField("Password", InputField.TYPE_PASSWORD);
         password.getJTextArea().getDocument().addDocumentListener(new DocumentListener() {
             public void update() {
                 clearError();
@@ -145,7 +145,9 @@ class LoginForm extends JPanel {
         messagePanel.add(message);
 
         JPanel titlePanel = new JPanel(new GridBagLayout());
-        titlePanel.add(new JLabel("Login"));
+        JLabel loginText = new JLabel("Login");
+        loginText.setFont(new Font(loginText.getFont().getFontName(), Font.BOLD, 18));
+        titlePanel.add(loginText);
 
         JPanel switchPanel = new JPanel(new GridBagLayout());
         JButton switchButton = new JButton("No Account? Register!");
