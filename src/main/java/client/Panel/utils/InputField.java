@@ -24,8 +24,10 @@ public class InputField extends JPanel {
             input = new JPasswordField("", 20);
             input.setBorder(new JTextArea(1, 20).getBorder());
             // input.setBorder(null);
-        } else if (type == TYPE_NORMAL)
+        } else if (type == TYPE_NORMAL) {
             input = new JTextArea(1, 20);
+            input.getDocument().putProperty("filterNewlines", Boolean.TRUE);
+        }
         input.setMargin(new Insets(10, 5, 5, 5));
         add(label);
         add(gap);
