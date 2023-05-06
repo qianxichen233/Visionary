@@ -5,24 +5,30 @@ import javax.swing.*;
 import java.awt.*;
 
 import client.Canvas.Canvas;
+import client.Toolbar.Buttons.MyButton;
 
 public class ShapePanel extends JPanel {
     private static final int padding = 10;
-    private static final int height = 30;
+    private static final int height = 25;
 
     private static final int options = 4;
 
     Toolbar toolbar;
+
+    private MyButton lineOption;
+    private MyButton rectOption;
+    private MyButton cirOption;
+    private MyButton triOption;
 
     ShapePanel(Toolbar toolbar, int Hoffset) {
         super();
         this.toolbar = toolbar;
         int width = Toolbar.getActualWidth() - 2 * padding;
 
-        JButton lineOption = new JButton("Line");
-        JButton rectOption = new JButton("Rect");
-        JButton cirOption = new JButton("Circle");
-        JButton triOption = new JButton("Triangle");
+        lineOption = new MyButton("Line");
+        rectOption = new MyButton("Rect");
+        cirOption = new MyButton("Circle");
+        triOption = new MyButton("Triangle");
         lineOption.setCursor(new Cursor(Cursor.HAND_CURSOR));
         rectOption.setCursor(new Cursor(Cursor.HAND_CURSOR));
         cirOption.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -35,7 +41,7 @@ public class ShapePanel extends JPanel {
 
         int curX = buttonPadding;
 
-        lineOption.setBounds(curX, 5, lineOption.getPreferredSize().width, height);
+        lineOption.setBounds(curX, 10, lineOption.getPreferredSize().width, height);
         lineOption.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -44,7 +50,7 @@ public class ShapePanel extends JPanel {
         });
         curX += lineOption.getPreferredSize().width + buttonPadding;
 
-        rectOption.setBounds(curX, 5, rectOption.getPreferredSize().width, height);
+        rectOption.setBounds(curX, 10, rectOption.getPreferredSize().width, height);
         rectOption.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -53,7 +59,7 @@ public class ShapePanel extends JPanel {
         });
         curX += rectOption.getPreferredSize().width + buttonPadding;
 
-        cirOption.setBounds(curX, 5, cirOption.getPreferredSize().width, height);
+        cirOption.setBounds(curX, 10, cirOption.getPreferredSize().width, height);
         cirOption.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -62,7 +68,7 @@ public class ShapePanel extends JPanel {
         });
         curX += cirOption.getPreferredSize().width + buttonPadding;
 
-        triOption.setBounds(curX, 5, triOption.getPreferredSize().width, height);
+        triOption.setBounds(curX, 10, triOption.getPreferredSize().width, height);
         triOption.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -76,14 +82,22 @@ public class ShapePanel extends JPanel {
         add(triOption);
 
         // setBounds(padding, padding + Hoffset, width, height);
-        setPreferredSize(new Dimension(width, height));
+        setPreferredSize(new Dimension(width, height + 10));
         setLayout(null);
     }
 
     public void setFocus(String shape) {
+        lineOption.setFocus(shape.equals("Line"));
+        rectOption.setFocus(shape.equals("Rectangle"));
+        cirOption.setFocus(shape.equals("Circle"));
+        triOption.setFocus(shape.equals("Triangle"));
     }
 
     public void loseFocus() {
+        lineOption.unFocus();
+        rectOption.unFocus();
+        cirOption.unFocus();
+        triOption.unFocus();
     }
 
     public static int getCHeight() {

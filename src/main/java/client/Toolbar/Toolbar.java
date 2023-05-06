@@ -107,6 +107,8 @@ public class Toolbar extends JPanel {
         filenamePanel = new FilenamePanel(this, currentHeight);
         currentHeight += FilenamePanel.getCHeight();
         add(filenamePanel);
+
+        penModePanel.setFocus(mode);
     }
 
     public void onMainColorChange(Color color) {
@@ -148,7 +150,7 @@ public class Toolbar extends JPanel {
 
     public void setMode(int mode, String... args) {
         this.mode = mode;
-        if (this.mode == Canvas.mode_pen) {
+        if (this.mode != Canvas.mode_shape) {
             penModePanel.setFocus(mode);
             shapePanel.loseFocus();
         } else if (this.mode == Canvas.mode_shape) {

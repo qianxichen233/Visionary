@@ -5,26 +5,33 @@ import javax.swing.*;
 import java.awt.*;
 
 import client.Canvas.Canvas;
+import client.Toolbar.Buttons.MyButton;
 
 public class PenModePanel extends JPanel {
     private static final int padding = 10;
-    private static final int height = 30;
+    private static final int height = 25;
 
     private static final int column = 4;
     private static final int row = 2;
 
     Toolbar toolbar;
 
+    private MyButton penOption;
+    private MyButton pickerOption;
+    private MyButton eraserOption;
+    private MyButton fillOption;
+    private MyButton selectOption;
+
     PenModePanel(Toolbar toolbar, int Hoffset) {
         super();
         this.toolbar = toolbar;
         int width = Toolbar.getActualWidth() - 2 * padding;
 
-        JButton penOption = new JButton("Pen");
-        JButton pickerOption = new JButton("Picker");
-        JButton eraserOption = new JButton("Eraser");
-        JButton fillOption = new JButton("Fill");
-        JButton selectOption = new JButton("Select");
+        penOption = new MyButton("Pen");
+        pickerOption = new MyButton("Picker");
+        eraserOption = new MyButton("Eraser");
+        fillOption = new MyButton("Fill");
+        selectOption = new MyButton("Select");
         penOption.setCursor(new Cursor(Cursor.HAND_CURSOR));
         pickerOption.setCursor(new Cursor(Cursor.HAND_CURSOR));
         eraserOption.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -74,7 +81,7 @@ public class PenModePanel extends JPanel {
         });
         curX = buttonPadding;
 
-        selectOption.setBounds(curX, height + 5, selectOption.getPreferredSize().width, height);
+        selectOption.setBounds(curX, height + 10, selectOption.getPreferredSize().width, height);
         selectOption.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -89,14 +96,24 @@ public class PenModePanel extends JPanel {
         add(selectOption);
 
         // setBounds(padding, padding + Hoffset, width, height);
-        setPreferredSize(new Dimension(width, height * row));
+        setPreferredSize(new Dimension(width, height * row + (row - 1) * 5));
         setLayout(null);
     }
 
     public void setFocus(int mode) {
+        penOption.setFocus(mode == Canvas.mode_pen);
+        pickerOption.setFocus(mode == Canvas.mode_pick);
+        eraserOption.setFocus(mode == Canvas.mode_erase);
+        fillOption.setFocus(mode == Canvas.mode_fill);
+        selectOption.setFocus(mode == Canvas.mode_select);
     }
 
     public void loseFocus() {
+        penOption.unFocus();
+        pickerOption.unFocus();
+        eraserOption.unFocus();
+        fillOption.unFocus();
+        selectOption.unFocus();
     }
 
     public static int getCHeight() {

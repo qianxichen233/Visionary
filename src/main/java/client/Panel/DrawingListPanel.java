@@ -242,6 +242,7 @@ class DrawingList extends JPanel {
             setLayout(null);
             JLabel loading = new JLabel("Loading...");
             loading.setFont(new Font(loading.getFont().getName(), Font.BOLD, 24));
+            loading.setForeground(Color.white);
             int width = (int) loading.getPreferredSize().getWidth();
             int height = (int) loading.getPreferredSize().getHeight();
             loading.setBounds((getWidth() - width) / 2, (getHeight() - height) / 2, width, 30);
