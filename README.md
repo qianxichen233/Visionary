@@ -9,10 +9,10 @@ The project implemented a full-stack desktop application that can help user to c
 
 1. Various Painting Tools:
     - Pen Tool:
-        - With optimized algorithm to achieve a smooth drawing line
+        - With optimized algorithm to achieve a continues drawing line
     - Color Selector:
         - Can use two colors at the same time. Left mouse button corresponds to main color and right mouse button corresponds to secondary color.
-        - 16 preset colors for convenience use
+        - 16 preset colors for convenient usage
         - Also support choose arbitrary colors from color panel or entering color code
     - Size Tool:
         - Allow to change pen size
@@ -23,7 +23,7 @@ The project implemented a full-stack desktop application that can help user to c
     - Eraser:
         - Able to erase traces on the canvas
     - Color picker:
-        - Allow users to pick colors directly from canvas
+        - Allow users to pick colors directly from the canvas
     - Filler:
         - Allow users to fill an enclosed area with color
         - Implemented with Flood Fill algorithm

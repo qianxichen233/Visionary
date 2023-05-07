@@ -1,2 +1,0 @@
-1. add different brushes ?
-2. resize clip on select mode ?
