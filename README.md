@@ -68,9 +68,9 @@ The project implemented a full-stack desktop application that can help user to c
 ### Project Showcase
 
 Main Page:\
-<img src="https://user-images.githubusercontent.com/53324229/236704196-98764bbc-74a4-49f6-8fa4-4b59c554ab60.png" width="250">\
+<img src="https://user-images.githubusercontent.com/53324229/236704196-98764bbc-74a4-49f6-8fa4-4b59c554ab60.png">\
 Canvas Page:\
-<img src="https://user-images.githubusercontent.com/53324229/236704204-9ffb3e4a-1c0e-4604-b142-035ef720674e.png" width="250">
+<img src="https://user-images.githubusercontent.com/53324229/236704204-9ffb3e4a-1c0e-4604-b142-035ef720674e.png">
 
 ### Example Drawings Created From the App
 
