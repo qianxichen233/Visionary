@@ -65,6 +65,17 @@ The project implemented a full-stack desktop application that can help user to c
       <img src="https://user-images.githubusercontent.com/53324229/236570351-95bdc8ec-1576-4de6-a983-5d8cad9282ca.png" width="250">
       <img src="https://user-images.githubusercontent.com/53324229/236570411-4e855474-c8bf-45ba-a599-3761e53eacb3.png" width="250">
 
+### Project Showcase
+
+<img src="https://user-images.githubusercontent.com/53324229/236704196-98764bbc-74a4-49f6-8fa4-4b59c554ab60.png" width="300">
+<img src="https://user-images.githubusercontent.com/53324229/236704204-9ffb3e4a-1c0e-4604-b142-035ef720674e.png" width="300">
+
+### Example Drawings Created From the App
+
+<img src="https://user-images.githubusercontent.com/53324229/236704244-d2f5b603-d669-42cf-92a4-8708df78238c.png" width="200">
+<img src="https://user-images.githubusercontent.com/53324229/236704247-eb7c0acc-16a0-4701-91f3-a966b45acc25.png" width="200">
+<img src="https://user-images.githubusercontent.com/53324229/236704248-1c816487-559c-4acf-893c-6ac10a4c9afb.png" width="200">
+
 ### External Packages Used
 
 1. mariadb: JDBC driver
