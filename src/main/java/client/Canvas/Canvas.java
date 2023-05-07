@@ -153,7 +153,10 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
     public Canvas(DrawingPanel panel, BufferedImage bufferedImage) {
         this();
         this.panel = panel;
-        this.mainCanvas = bufferedImage;
+        this.mainCanvas = new BufferedImage(
+                getWidth(), getHeight(),
+                BufferedImage.TYPE_4BYTE_ABGR);
+        this.mainCanvas.getGraphics().drawImage(bufferedImage, 0, 0, null);
     }
 
     public void setMainColor(String color) {
@@ -428,7 +431,7 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        if (mode == Canvas.mode_pen) {
+        if (mode == Canvas.mode_pen || mode == Canvas.mode_erase) {
             prevX = -1;
             prevY = -1;
         } else if (mode == Canvas.mode_shape) {
