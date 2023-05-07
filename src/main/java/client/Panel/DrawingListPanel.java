@@ -89,6 +89,7 @@ public class DrawingListPanel extends MyPanel {
     }
 
     public void deleteDrawing(Drawing drawing) {
+        System.out.println("delete!");
         try {
             SessionManager.MySock mySock = sessionManager.newSock("delete", true);
             if (mySock == null)
@@ -417,6 +418,12 @@ class DrawingItem extends JPanel {
         addMouseListener(new onClickListener(drawing));
         final JButton deleteButton = new JButton("X");
         deleteButton.setBounds(5, 5, 20, 20);
+        deleteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                DrawingItem.this.listPanel.onDelete(DrawingItem.this.drawing);
+            }
+        });
         add(deleteButton);
         setCursor(new Cursor(Cursor.HAND_CURSOR));
         setLayout(null);
